@@ -1,0 +1,63 @@
+{
+  "generated_at": "2026-01-14T00:00:00Z",
+  "periodo": "01/10/2025 a 14/01/2026",
+  "roi": {
+    "investimento_total": 0,
+    "leads_agencia": 0,
+    "leads_crm": 0,
+    "vendas_crm": 0,
+    "valor_vendido": 0,
+    "custo_por_lead_real": 0,
+    "custo_por_venda": 0,
+    "roi_percentual": 0,
+    "meta": {
+      "investimento": 0,
+      "leads_crm": 0,
+      "vendas": 0,
+      "valor_vendido": 0,
+      "roi": 0
+    },
+    "google": {
+      "investimento": 0,
+      "leads_crm": 0,
+      "vendas": 0,
+      "valor_vendido": 0,
+      "roi": 0
+    }
+  },
+  "qualidade": {
+    "resumo_midia": {
+      "total_leads": 0,
+      "ganhos": 0,
+      "perdidos": 0,
+      "taxa_conversao": 0,
+      "custo_por_venda": 0
+    },
+    "leads_frios_percentual": 0,
+    "top_motivos_perda": [
+      { "motivo": "Sem Interesse", "percentual": 0 },
+      { "motivo": "Cliente Não Responde", "percentual": 0 }
+    ]
+  },
+  "proposta": {
+    "decisao": "Manter por 14–30 dias com condição (qualidade), ou reduzir e realocar.",
+    "cobrancas_7_dias": [
+      "Separar campanhas por intenção (Search alta intenção + remarketing).",
+      "Filtrar curioso no anúncio (preço/entrada/análise de crédito).",
+      "Relatório de qualidade: % válidos, % respondidos, % qualificados, % agendamentos, % vendas.",
+      "UTMs e padrão no CRM (origem e canal)."
+    ],
+    "realocacao": [
+      "Google Search (alta intenção) + remarketing",
+      "Meta remarketing + criativos com filtro",
+      "Programa de indicação + parcerias"
+    ],
+    "kpis_para_decidir": [
+      "% Qualificados (SDR) / total leads",
+      "% Agendamentos / qualificados",
+      "Custo por venda (CRM) por canal",
+      "\"Não responde\" + SLA de 1ª resposta"
+    ]
+  }
+}
+

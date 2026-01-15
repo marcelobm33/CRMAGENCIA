@@ -1,0 +1,6 @@
+vendedor,valor,lucro_bruto,status,motivo_perda,data_criacao,data_fechamento,telefone,email,nome_cliente,origem,canal,utm_source,utm_medium,utm_campaign,utm_content,utm_term,gclid,fbclid,veiculo_interesse,observacoes
+Carlos Silva,85000,8500,ganho,,2024-01-10,2024-01-20,11999887766,joao@email.com,João Santos,Site,Google,google,cpc,busca_seminovos,anuncio_v1,carro usado sp,,,Honda Civic 2022,Cliente fechou rápido
+Maria Santos,0,0,perdido,Preço alto,2024-01-12,,11988776655,ana@email.com,Ana Costa,Instagram,Meta,facebook,cpc,leads_ofertas,stories_jan,,,"fb.1.123456",VW Golf 2021,Achou caro demais
+Pedro Souza,0,0,aberto,,2024-01-15,,11977665544,carlos@email.com,Carlos Lima,Site,Google,google,cpc,busca_financiamento,texto_02,financiamento carro,,,Toyota Corolla 2023,Aguardando aprovação de crédito
+Ana Costa,62000,6200,ganho,,2024-01-08,2024-01-18,11966554433,pedro@email.com,Pedro Alves,Indicação,Orgânico,,,,,,,,,Hyundai HB20 2023,Indicado pelo João
+João Oliveira,0,0,perdido,Cliente não retornou,2024-01-05,,11955443322,maria@email.com,Maria Silva,WhatsApp,Meta,facebook,cpc,remarketing_visitantes,carousel_01,,,,"fb.1.789012",Chevrolet Onix 2022,Não atendeu mais
