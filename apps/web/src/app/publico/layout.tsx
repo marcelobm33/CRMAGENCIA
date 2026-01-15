@@ -3,6 +3,10 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: "Relatório Público",
   description: "Relatório público (sem dados sensíveis) para compartilhamento",
+  robots: {
+    index: false,
+    follow: false,
+  },
 };
 
 export default function PublicLayout({ children }: { children: React.ReactNode }) {

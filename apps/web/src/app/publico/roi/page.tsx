@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { AlertTriangle, TrendingUp, Users, DollarSign, Target, CheckCircle2 } from 'lucide-react';
 
 type PublicReport = {
@@ -47,11 +48,14 @@ function formatNumber(value: number): string {
 export default function PublicRoiPage() {
   const [report, setReport] = useState<PublicReport | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const searchParams = useSearchParams();
+  const token = searchParams.get('t') ?? '';
 
   useEffect(() => {
     (async () => {
       try {
-        const res = await fetch('/public-report.json', { cache: 'no-store' });
+        const url = token ? `/public-report.json?t=${encodeURIComponent(token)}` : '/public-report.json';
+        const res = await fetch(url, { cache: 'no-store' });
         if (!res.ok) throw new Error('public-report.json não encontrado');
         const data = (await res.json()) as PublicReport;
         setReport(data);
@@ -59,7 +63,7 @@ export default function PublicRoiPage() {
         setError(e?.message ?? 'Erro ao carregar relatório');
       }
     })();
-  }, []);
+  }, [token]);
 
   const title = useMemo(() => 'Relatório Público', []);
 
@@ -197,7 +201,7 @@ export default function PublicRoiPage() {
       </div>
 
       <div className="text-center text-xs text-gray-400">
-        Link público: qualquer pessoa com este link consegue ver (não exige login).
+        Este link exige um token (ex.: <span className="font-mono">?t=...</span>). Compartilhe somente com quem deve ver.
       </div>
     </div>
   );

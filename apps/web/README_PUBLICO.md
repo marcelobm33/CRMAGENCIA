@@ -3,6 +3,17 @@
 Objetivo: disponibilizar um link público **sem expor CRM/segredos**.  
 O relatório público lê apenas `public/public-report.json` (estático).
 
+### 0) "Só quem tem o link" (token no link)
+
+Você pode exigir um token no link (não é login; é um bloqueio simples por token).
+
+- Configure na Vercel (Environment Variables):
+  - `PUBLIC_REPORT_TOKEN` = um valor longo (ex.: `a1b2c3...`)
+- Acesse/compartilhe o link assim:
+  - `/publico/roi?t=SEU_TOKEN`
+
+O arquivo `/public-report.json` também fica protegido pelo mesmo token.
+
 ### 1) Gerar o arquivo público (no seu computador)
 
 Pré-requisitos:
@@ -35,7 +46,7 @@ Exemplo:
 - Build command: `npm run build`
 - Output: padrão (Next.js)
 - Depois de publicado, o link será algo como:
-  - `https://SEU-PROJETO.vercel.app/publico/roi`
+  - `https://SEU-PROJETO.vercel.app/publico/roi?t=SEU_TOKEN`
 
 #### Opção B — Cloudflare Pages (grátis)
 - Crie conta no Cloudflare
