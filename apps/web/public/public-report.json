@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-01-14T19:54:54.559156+00:00",
+  "generated_at": "2026-01-15T12:00:00.000000+00:00",
   "periodo": "01/10/2025 a 14/01/2026",
   "roi": {
     "investimento_total": 53598.0,
@@ -10,59 +10,123 @@
     "custo_por_lead_real": 141.05,
     "custo_por_venda": 6699.75,
     "roi_percentual": 1388.48,
+    "roi_real_15pct": 208,
+    "roi_real_20pct": 278,
+    "roi_real_25pct": 347,
     "meta": {
       "investimento": 29743.71,
+      "leads_agencia": 788,
       "leads_crm": 285,
       "vendas": 6,
       "valor_vendido": 602400.0,
+      "custo_por_lead": 104.36,
+      "custo_por_venda": 4957.28,
       "roi": 2025.3
     },
     "google": {
       "investimento": 23854.29,
+      "leads_agencia": 736,
       "leads_crm": 95,
       "vendas": 2,
       "valor_vendido": 141800.0,
+      "custo_por_lead": 251.1,
+      "custo_por_venda": 11927.15,
       "roi": 594.44
     }
+  },
+  "auditoria": {
+    "gap_leads": {
+      "agencia_reporta": 1131,
+      "crm_real": 380,
+      "diferenca": 751,
+      "percentual_perdido": 66.4,
+      "taxa_aproveitamento": 33.6
+    },
+    "roi_real_com_margem": {
+      "margem_15pct": {
+        "lucro_bruto": 111630,
+        "roi": 208
+      },
+      "margem_20pct": {
+        "lucro_bruto": 148840,
+        "roi": 278
+      },
+      "margem_25pct": {
+        "lucro_bruto": 186050,
+        "roi": 347
+      }
+    },
+    "problema_critico": "De cada 100 leads que a agência reporta, apenas 34 chegam ao CRM. Possíveis causas: (1) leads duplicados na agência, (2) formulários com erros, (3) leads não integrados, (4) definição diferente de 'lead'."
   },
   "qualidade": {
     "resumo_midia": {
       "total_leads": 380,
       "ganhos": 8,
-      "perdidos": 356,
-      "taxa_conversao": 2.2,
-      "custo_por_venda": 7762.25
+      "perdidos": 365,
+      "em_andamento": 7,
+      "taxa_conversao": 2.14,
+      "custo_por_venda": 6699.75
     },
-    "leads_frios_percentual": 57.1,
+    "comparativo_indicacao": {
+      "total_leads": 59,
+      "ganhos": 30,
+      "perdidos": 24,
+      "taxa_conversao": 55.56,
+      "multiplicador": 26
+    },
+    "leads_frios_percentual": 57.5,
     "top_motivos_perda": [
-      {
-        "motivo": "Sem Interesse",
-        "percentual": 29.9
-      },
-      {
-        "motivo": "Cliente Não Responde",
-        "percentual": 27.2
-      }
+      { "motivo": "Sem Interesse", "quantidade": 105, "percentual": 29.7 },
+      { "motivo": "Cliente Não Responde", "quantidade": 98, "percentual": 27.8 },
+      { "motivo": "Vai esperar", "quantidade": 45, "percentual": 12.7 },
+      { "motivo": "Crédito Negado", "quantidade": 22, "percentual": 6.2 },
+      { "motivo": "Produto não disponível", "quantidade": 19, "percentual": 5.4 }
     ]
   },
   "proposta": {
-    "decisao": "Manter por 14–30 dias com condição (qualidade), ou reduzir e realocar.",
-    "cobrancas_7_dias": [
-      "Separar campanhas por intenção (Search alta intenção + remarketing).",
-      "Filtrar curioso no anúncio (preço/entrada/análise de crédito).",
-      "Relatório de qualidade: % válidos, % respondidos, % qualificados, % agendamentos, % vendas.",
-      "UTMs e padrão no CRM (origem e canal)."
+    "decisao": "Manter por 14–30 dias com condição: melhorar qualidade do lead ou realocar budget.",
+    "cobrancas_imediatas": [
+      {
+        "item": "Explicar o gap de 751 leads",
+        "detalhe": "Agência reporta 1.131, mas só 380 chegam ao CRM. Onde estão os outros 66%?"
+      },
+      {
+        "item": "Segmentação inadequada",
+        "detalhe": "57,5% dos leads são frios ('Sem Interesse' + 'Não Responde'). Estão atraindo curiosos."
+      },
+      {
+        "item": "UTMs e rastreamento",
+        "detalhe": "Google tem 95 leads no CRM mas agência reporta 736. Verificar integrações."
+      }
     ],
-    "realocacao": [
-      "Google Search (alta intenção) + remarketing",
-      "Meta remarketing + criativos com filtro",
-      "Programa de indicação + parcerias"
+    "exigir_no_relatorio_semanal": [
+      "% de leads qualificados (SDR) / total leads",
+      "% de agendamentos / qualificados",
+      "Custo por venda (CRM) por canal: META R$ 4.957 vs Google R$ 11.927",
+      "SLA de primeira resposta (98 leads perdidos por 'não responde')"
     ],
+    "realocacao_budget": {
+      "manter_aumentar": [
+        "META (ROI 2.025%)",
+        "Remarketing (leads quentes)",
+        "Criativos com filtro de preço"
+      ],
+      "revisar_otimizar": [
+        "Google Search (ROI 594%)",
+        "Segmentação lookalike",
+        "Landing pages de captura"
+      ],
+      "reduzir_pausar": [
+        "Campanhas de alcance puro",
+        "Públicos frios sem filtro",
+        "Anúncios sem preço/qualificação"
+      ]
+    },
     "kpis_para_decidir": [
       "% Qualificados (SDR) / total leads",
       "% Agendamentos / qualificados",
       "Custo por venda (CRM) por canal",
-      "\"Não responde\" + SLA de 1ª resposta"
+      "'Não responde' + SLA de 1ª resposta"
     ]
   }
 }

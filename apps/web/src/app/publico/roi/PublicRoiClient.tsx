@@ -11,6 +11,13 @@ import {
   Target,
   TrendingUp,
   Users,
+  ShieldAlert,
+  Scale,
+  Flame,
+  Snowflake,
+  ClipboardList,
+  FileWarning,
+  Send,
 } from 'lucide-react';
 
 type PublicReport = {
@@ -26,18 +33,44 @@ type PublicReport = {
     custo_por_lead_real: number;
     custo_por_venda: number;
     roi_percentual: number;
-    meta: { investimento: number; leads_crm: number; vendas: number; valor_vendido: number; roi: number };
-    google: { investimento: number; leads_crm: number; vendas: number; valor_vendido: number; roi: number };
+    roi_real_15pct?: number;
+    roi_real_20pct?: number;
+    roi_real_25pct?: number;
+    meta: { investimento: number; leads_agencia?: number; leads_crm: number; vendas: number; valor_vendido: number; custo_por_lead?: number; custo_por_venda?: number; roi: number };
+    google: { investimento: number; leads_agencia?: number; leads_crm: number; vendas: number; valor_vendido: number; custo_por_lead?: number; custo_por_venda?: number; roi: number };
+  };
+  auditoria?: {
+    gap_leads: {
+      agencia_reporta: number;
+      crm_real: number;
+      diferenca: number;
+      percentual_perdido: number;
+      taxa_aproveitamento: number;
+    };
+    roi_real_com_margem: {
+      margem_15pct: { lucro_bruto: number; roi: number };
+      margem_20pct: { lucro_bruto: number; roi: number };
+      margem_25pct: { lucro_bruto: number; roi: number };
+    };
+    problema_critico: string;
   };
   qualidade: {
-    resumo_midia: { total_leads: number; ganhos: number; perdidos: number; taxa_conversao: number; custo_por_venda: number };
+    resumo_midia: { total_leads: number; ganhos: number; perdidos: number; em_andamento?: number; taxa_conversao: number; custo_por_venda: number };
+    comparativo_indicacao?: { total_leads: number; ganhos: number; perdidos: number; taxa_conversao: number; multiplicador: number };
     leads_frios_percentual: number;
-    top_motivos_perda: Array<{ motivo: string; percentual: number }>;
+    top_motivos_perda: Array<{ motivo: string; quantidade?: number; percentual: number }>;
   };
   proposta: {
     decisao: string;
-    cobrancas_7_dias: string[];
-    realocacao: string[];
+    cobrancas_7_dias?: string[];
+    cobrancas_imediatas?: Array<{ item: string; detalhe: string }>;
+    exigir_no_relatorio_semanal?: string[];
+    realocacao?: string[];
+    realocacao_budget?: {
+      manter_aumentar: string[];
+      revisar_otimizar: string[];
+      reduzir_pausar: string[];
+    };
     kpis_para_decidir: string[];
   };
 };
@@ -265,6 +298,151 @@ export default function PublicRoiClient() {
         <ComparisonCard title="GOOGLE Ads" platform="google" data={report.roi.google} />
       </div>
 
+      {/* Auditoria: Gap Agência vs CRM */}
+      {report.auditoria && (
+        <div className="bg-gradient-to-r from-red-900 to-red-800 rounded-xl p-6 text-white">
+          <div className="flex items-center gap-3 mb-4">
+            <ShieldAlert className="w-6 h-6 text-red-300" />
+            <h3 className="text-lg font-bold">🔍 Auditoria: Gap Agência vs CRM</h3>
+          </div>
+          
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="bg-white/10 rounded-lg p-4">
+              <p className="text-sm text-red-200">Leads Agência Reporta</p>
+              <p className="text-2xl font-bold">{formatNumber(report.auditoria.gap_leads.agencia_reporta)}</p>
+            </div>
+            <div className="bg-white/10 rounded-lg p-4">
+              <p className="text-sm text-red-200">Leads no CRM</p>
+              <p className="text-2xl font-bold">{formatNumber(report.auditoria.gap_leads.crm_real)}</p>
+            </div>
+            <div className="bg-red-500/30 rounded-lg p-4 border border-red-400">
+              <p className="text-sm text-red-200">GAP (leads perdidos)</p>
+              <p className="text-2xl font-bold text-red-300">{formatNumber(report.auditoria.gap_leads.diferenca)}</p>
+              <p className="text-xs text-red-300 mt-1">{report.auditoria.gap_leads.percentual_perdido}% não chegaram</p>
+            </div>
+            <div className="bg-white/10 rounded-lg p-4">
+              <p className="text-sm text-red-200">Taxa Aproveitamento</p>
+              <p className="text-2xl font-bold text-amber-400">{report.auditoria.gap_leads.taxa_aproveitamento}%</p>
+            </div>
+          </div>
+          
+          <div className="mt-4 p-4 bg-red-950/50 rounded-lg">
+            <p className="text-sm text-red-200">
+              <strong>⚠️ Problema crítico:</strong> {report.auditoria.problema_critico}
+            </p>
+          </div>
+        </div>
+      )}
+
+      {/* ROI Real com Margem */}
+      {report.auditoria && (
+        <div className="bg-white rounded-xl border overflow-hidden">
+          <div className="px-6 py-4 bg-amber-50 border-b border-amber-200">
+            <div className="flex items-center gap-2">
+              <Scale className="w-5 h-5 text-amber-600" />
+              <h3 className="text-lg font-semibold text-amber-900">ROI Real (com margem) vs ROI Bruto</h3>
+            </div>
+          </div>
+          
+          <div className="p-6">
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+              <div className="rounded-xl border-2 border-gray-200 p-4">
+                <p className="text-xs font-medium text-gray-500 uppercase">ROI Bruto (atual)</p>
+                <p className="text-2xl font-bold text-gray-900">{report.roi.roi_percentual.toFixed(0)}%</p>
+                <p className="text-xs text-gray-500 mt-1">Faturamento ÷ Investimento</p>
+              </div>
+              
+              <div className="rounded-xl border-2 border-amber-200 bg-amber-50 p-4">
+                <p className="text-xs font-medium text-amber-600 uppercase">ROI Real (15% margem)</p>
+                <p className="text-2xl font-bold text-amber-700">{report.auditoria.roi_real_com_margem.margem_15pct.roi}%</p>
+                <p className="text-xs text-amber-600 mt-1">Cenário pessimista</p>
+              </div>
+              
+              <div className="rounded-xl border-2 border-emerald-200 bg-emerald-50 p-4">
+                <p className="text-xs font-medium text-emerald-600 uppercase">ROI Real (20% margem)</p>
+                <p className="text-2xl font-bold text-emerald-700">{report.auditoria.roi_real_com_margem.margem_20pct.roi}%</p>
+                <p className="text-xs text-emerald-600 mt-1">Cenário base</p>
+              </div>
+              
+              <div className="rounded-xl border-2 border-blue-200 bg-blue-50 p-4">
+                <p className="text-xs font-medium text-blue-600 uppercase">ROI Real (25% margem)</p>
+                <p className="text-2xl font-bold text-blue-700">{report.auditoria.roi_real_com_margem.margem_25pct.roi}%</p>
+                <p className="text-xs text-blue-600 mt-1">Cenário otimista</p>
+              </div>
+            </div>
+            
+            <div className="mt-4 p-4 bg-gray-50 rounded-lg">
+              <p className="text-sm text-gray-600">
+                <strong>Interpretação:</strong> O ROI de {report.roi.roi_percentual.toFixed(0)}% é sobre faturamento, não lucro.
+                Considerando margem de 20%, o ROI real é de{' '}
+                <strong className="text-emerald-600">{report.auditoria.roi_real_com_margem.margem_20pct.roi}%</strong>.
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Qualidade do Lead com Comparativo Indicação */}
+      {report.qualidade.comparativo_indicacao && (
+        <div className="bg-white rounded-xl border overflow-hidden">
+          <div className="px-6 py-4 bg-gradient-to-r from-purple-600 to-indigo-600">
+            <h3 className="text-lg font-semibold text-white">Qualidade do Lead: Mídia Paga vs Indicação</h3>
+          </div>
+          
+          <div className="p-6 grid lg:grid-cols-2 gap-4">
+            <div className="rounded-xl border-2 border-red-200 bg-red-50 p-5">
+              <div className="flex items-center gap-2 mb-3">
+                <Snowflake className="w-5 h-5 text-red-500" />
+                <span className="font-semibold text-red-900">Mídia Paga</span>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <p className="text-xs text-red-600">Taxa Conversão</p>
+                  <p className="text-2xl font-bold text-red-700">{report.qualidade.resumo_midia.taxa_conversao}%</p>
+                </div>
+                <div>
+                  <p className="text-xs text-red-600">Custo/Venda</p>
+                  <p className="text-2xl font-bold text-red-700">{formatCurrency(report.qualidade.resumo_midia.custo_por_venda)}</p>
+                </div>
+                <div>
+                  <p className="text-xs text-red-600">Leads Perdidos</p>
+                  <p className="text-xl font-bold text-red-700">{formatNumber(report.qualidade.resumo_midia.perdidos)}</p>
+                </div>
+                <div>
+                  <p className="text-xs text-red-600">Leads Frios</p>
+                  <p className="text-xl font-bold text-red-700">{report.qualidade.leads_frios_percentual}%</p>
+                </div>
+              </div>
+            </div>
+            
+            <div className="rounded-xl border-2 border-emerald-200 bg-emerald-50 p-5">
+              <div className="flex items-center gap-2 mb-3">
+                <Flame className="w-5 h-5 text-emerald-500" />
+                <span className="font-semibold text-emerald-900">Indicação (benchmark)</span>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <p className="text-xs text-emerald-600">Taxa Conversão</p>
+                  <p className="text-2xl font-bold text-emerald-700">{report.qualidade.comparativo_indicacao.taxa_conversao}%</p>
+                </div>
+                <div>
+                  <p className="text-xs text-emerald-600">Custo/Venda</p>
+                  <p className="text-2xl font-bold text-emerald-700">R$ 0</p>
+                </div>
+                <div>
+                  <p className="text-xs text-emerald-600">Multiplicador</p>
+                  <p className="text-xl font-bold text-emerald-700">{report.qualidade.comparativo_indicacao.multiplicador}x melhor</p>
+                </div>
+                <div>
+                  <p className="text-xs text-emerald-600">Leads</p>
+                  <p className="text-xl font-bold text-emerald-700">{formatNumber(report.qualidade.comparativo_indicacao.total_leads)}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className="bg-white rounded-2xl border overflow-hidden">
         <div className="px-6 py-4 bg-gray-900 text-white">
           <h2 className="text-lg font-bold">Qualidade do Lead (sinal de esforço da equipe)</h2>
@@ -303,38 +481,113 @@ export default function PublicRoiClient() {
         </div>
       </div>
 
-      <div className="bg-white rounded-2xl border overflow-hidden">
-        <div className="px-6 py-4 bg-gradient-to-r from-indigo-600 to-purple-700 text-white">
-          <h2 className="text-lg font-bold flex items-center gap-2">
-            <CheckCircle2 className="w-5 h-5" /> Proposição (o que fazer com a agência)
-          </h2>
-          <p className="text-white/80 text-sm mt-1">{report.proposta.decisao}</p>
+      {/* Cobranças para Agência */}
+      <div className="bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-900 rounded-xl p-6 text-white">
+        <div className="flex items-center gap-3 mb-6">
+          <ClipboardList className="w-6 h-6 text-purple-300" />
+          <div>
+            <h3 className="text-xl font-bold">📋 Cobranças para Agência</h3>
+            <p className="text-purple-300 text-sm">Ações para apresentar e exigir da agência</p>
+          </div>
         </div>
-        <div className="p-6 grid md:grid-cols-3 gap-4">
-          <div className="rounded-2xl border p-5">
-            <div className="text-xs font-semibold uppercase text-gray-500">Cobranças (7 dias)</div>
-            <ul className="mt-3 text-sm text-gray-800 space-y-2 list-disc pl-5">
-              {report.proposta.cobrancas_7_dias.map((x, i) => (
-                <li key={i}>{x}</li>
-              ))}
-            </ul>
+        
+        <div className="grid lg:grid-cols-2 gap-6">
+          {/* Cobranças Imediatas */}
+          {report.proposta.cobrancas_imediatas && (
+            <div className="bg-white/10 rounded-xl p-5">
+              <h4 className="font-semibold text-purple-200 mb-4 flex items-center gap-2">
+                <AlertTriangle className="w-4 h-4" />
+                Exigir Imediatamente
+              </h4>
+              <ul className="space-y-3">
+                {report.proposta.cobrancas_imediatas.map((c, i) => (
+                  <li key={i} className="flex items-start gap-3">
+                    <span className="w-6 h-6 rounded-full bg-red-500 flex items-center justify-center text-xs font-bold shrink-0">{i + 1}</span>
+                    <div>
+                      <p className="font-medium">{c.item}</p>
+                      <p className="text-sm text-purple-300">{c.detalhe}</p>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+          
+          {/* Exigir no Relatório */}
+          {report.proposta.exigir_no_relatorio_semanal && (
+            <div className="bg-white/10 rounded-xl p-5">
+              <h4 className="font-semibold text-purple-200 mb-4 flex items-center gap-2">
+                <FileWarning className="w-4 h-4" />
+                Exigir no Relatório Semanal
+              </h4>
+              <ul className="space-y-3">
+                {report.proposta.exigir_no_relatorio_semanal.map((item, i) => (
+                  <li key={i} className="flex items-start gap-3">
+                    <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0 mt-0.5" />
+                    <p className="text-sm">{item}</p>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+        </div>
+        
+        {/* Realocação de Budget */}
+        {report.proposta.realocacao_budget && (
+          <div className="mt-6 bg-white/5 rounded-xl p-5">
+            <h4 className="font-semibold text-purple-200 mb-4 flex items-center gap-2">
+              <Send className="w-4 h-4" />
+              Proposta de Realocação de Budget
+            </h4>
+            
+            <div className="grid lg:grid-cols-3 gap-4">
+              <div className="bg-emerald-500/20 rounded-lg p-4 border border-emerald-400/30">
+                <p className="text-sm text-emerald-300 font-medium">✅ MANTER / AUMENTAR</p>
+                <ul className="mt-2 text-sm space-y-1">
+                  {report.proposta.realocacao_budget.manter_aumentar.map((x, i) => (
+                    <li key={i}>• {x}</li>
+                  ))}
+                </ul>
+              </div>
+              
+              <div className="bg-amber-500/20 rounded-lg p-4 border border-amber-400/30">
+                <p className="text-sm text-amber-300 font-medium">⚠️ REVISAR / OTIMIZAR</p>
+                <ul className="mt-2 text-sm space-y-1">
+                  {report.proposta.realocacao_budget.revisar_otimizar.map((x, i) => (
+                    <li key={i}>• {x}</li>
+                  ))}
+                </ul>
+              </div>
+              
+              <div className="bg-red-500/20 rounded-lg p-4 border border-red-400/30">
+                <p className="text-sm text-red-300 font-medium">❌ REDUZIR / PAUSAR</p>
+                <ul className="mt-2 text-sm space-y-1">
+                  {report.proposta.realocacao_budget.reduzir_pausar.map((x, i) => (
+                    <li key={i}>• {x}</li>
+                  ))}
+                </ul>
+              </div>
+            </div>
           </div>
-          <div className="rounded-2xl border p-5">
-            <div className="text-xs font-semibold uppercase text-gray-500">Pra onde ir (estratégia)</div>
-            <ul className="mt-3 text-sm text-gray-800 space-y-2 list-disc pl-5">
-              {report.proposta.realocacao.map((x, i) => (
-                <li key={i}>{x}</li>
-              ))}
-            </ul>
+        )}
+        
+        {/* KPIs para Decidir */}
+        <div className="mt-6 p-4 bg-white/10 rounded-xl">
+          <h4 className="font-semibold text-purple-200 mb-3">KPIs para decidir manter/cortar</h4>
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-2">
+            {report.proposta.kpis_para_decidir.map((kpi, i) => (
+              <div key={i} className="bg-white/5 rounded-lg p-2 text-sm text-center">
+                {kpi}
+              </div>
+            ))}
           </div>
-          <div className="rounded-2xl border p-5">
-            <div className="text-xs font-semibold uppercase text-gray-500">KPIs pra decidir manter/cortar</div>
-            <ul className="mt-3 text-sm text-gray-800 space-y-2 list-disc pl-5">
-              {report.proposta.kpis_para_decidir.map((x, i) => (
-                <li key={i}>{x}</li>
-              ))}
-            </ul>
-          </div>
+        </div>
+        
+        {/* Decisão Final */}
+        <div className="mt-6 p-4 bg-white/10 rounded-xl">
+          <p className="text-lg font-semibold text-center">
+            {report.proposta.decisao}
+          </p>
         </div>
       </div>
 
