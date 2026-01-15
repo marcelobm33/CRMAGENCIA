@@ -14,7 +14,15 @@ import {
   CheckCircle2,
   XCircle,
   Minus,
-  RefreshCw
+  RefreshCw,
+  ShieldAlert,
+  FileWarning,
+  Send,
+  Percent,
+  Scale,
+  Flame,
+  Snowflake,
+  ClipboardList
 } from 'lucide-react';
 
 interface DashboardData {
@@ -73,6 +81,56 @@ interface DashboardData {
   alertas: string[];
   insights: string[];
   observacao_agencia?: string;
+}
+
+interface QualidadeData {
+  periodo: string;
+  investimento_total: number;
+  resumo_midia: {
+    total_leads: number;
+    ganhos: number;
+    perdidos: number;
+    em_andamento: number;
+    taxa_conversao: number;
+    custo_por_lead: number;
+    custo_por_venda: number;
+  };
+  comparativo_indicacao: {
+    total_leads: number;
+    ganhos: number;
+    perdidos: number;
+    taxa_conversao: number;
+    custo: number;
+    multiplicador: number;
+  };
+  origens: Array<{
+    fonte: string;
+    total_leads: number;
+    ganhos: number;
+    perdidos: number;
+    taxa_conversao: number;
+    valor_vendido: number;
+    qualidade: 'alta' | 'media' | 'baixa';
+  }>;
+  motivos_perda: Array<{
+    motivo: string;
+    quantidade: number;
+    percentual: number;
+  }>;
+  leads_frios_percentual: number;
+  vendedores: Array<{
+    vendedor: string;
+    total_leads: number;
+    ganhos: number;
+    perdidos: number;
+    taxa_conversao: number;
+  }>;
+  alertas: string[];
+  recomendacoes: Array<{
+    acao: string;
+    motivo: string;
+    prioridade: 'alta' | 'media' | 'baixa';
+  }>;
 }
 
 interface VendaDetalhe {
@@ -287,6 +345,7 @@ function FunnelVisualization({ funil }: { funil: DashboardData['funil'] }) {
 export default function ROIDashboardPage() {
   const [data, setData] = useState<DashboardData | null>(null);
   const [vendas, setVendas] = useState<VendasData | null>(null);
+  const [qualidade, setQualidade] = useState<QualidadeData | null>(null);
   const [loading, setLoading] = useState(true);
   const [selectedPeriod, setSelectedPeriod] = useState<string>('consolidado');
 
@@ -314,9 +373,10 @@ export default function ROIDashboardPage() {
         ? 'http://localhost:8000/api/roi/vendas/consolidado'
         : `http://localhost:8000/api/roi/vendas/${selectedPeriod.split('-')[0]}/${selectedPeriod.split('-')[1]}`;
 
-      const [dashboardRes, vendasRes] = await Promise.all([
+      const [dashboardRes, vendasRes, qualidadeRes] = await Promise.all([
         fetch(dashboardUrl),
-        fetch(vendasUrl)
+        fetch(vendasUrl),
+        fetch('http://localhost:8000/api/roi/qualidade-leads')
       ]);
       
       if (dashboardRes.ok) {
@@ -327,6 +387,11 @@ export default function ROIDashboardPage() {
       if (vendasRes.ok) {
         const vendasResult = await vendasRes.json();
         setVendas(vendasResult);
+      }
+      
+      if (qualidadeRes.ok) {
+        const qualidadeResult = await qualidadeRes.json();
+        setQualidade(qualidadeResult);
       }
     } catch (error) {
       console.error('Erro ao buscar dados:', error);
@@ -678,6 +743,354 @@ export default function ROIDashboardPage() {
           </p>
         </div>
       </div>
+
+      {/* ========== SEÇÃO DE AUDITORIA ========== */}
+      {qualidade && (
+        <>
+          {/* Auditoria: Gap Agência vs CRM */}
+          <div className="bg-gradient-to-r from-red-900 to-red-800 rounded-xl p-6 text-white">
+            <div className="flex items-center gap-3 mb-4">
+              <ShieldAlert className="w-6 h-6 text-red-300" />
+              <h3 className="text-lg font-bold">🔍 Auditoria: Gap Agência vs CRM</h3>
+            </div>
+            
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
+              <div className="bg-white/10 rounded-lg p-4">
+                <p className="text-sm text-red-200">Leads Agência Reporta</p>
+                <p className="text-3xl font-bold">{formatNumber(data.leads_agencia)}</p>
+              </div>
+              <div className="bg-white/10 rounded-lg p-4">
+                <p className="text-sm text-red-200">Leads no CRM</p>
+                <p className="text-3xl font-bold">{formatNumber(data.leads_crm)}</p>
+              </div>
+              <div className="bg-red-500/30 rounded-lg p-4 border border-red-400">
+                <p className="text-sm text-red-200">GAP (leads perdidos)</p>
+                <p className="text-3xl font-bold text-red-300">
+                  {formatNumber(data.leads_agencia - data.leads_crm)}
+                </p>
+                <p className="text-xs text-red-300 mt-1">
+                  {((data.leads_agencia - data.leads_crm) / data.leads_agencia * 100).toFixed(1)}% não chegaram
+                </p>
+              </div>
+              <div className="bg-white/10 rounded-lg p-4">
+                <p className="text-sm text-red-200">Taxa de Aproveitamento</p>
+                <p className="text-3xl font-bold text-amber-400">
+                  {(data.leads_crm / data.leads_agencia * 100).toFixed(1)}%
+                </p>
+              </div>
+            </div>
+            
+            <div className="mt-4 p-4 bg-red-950/50 rounded-lg">
+              <p className="text-sm text-red-200">
+                <strong>⚠️ Problema crítico:</strong> De cada 100 leads que a agência reporta, apenas{' '}
+                <strong>{(data.leads_crm / data.leads_agencia * 100).toFixed(0)}</strong> chegam ao CRM.{' '}
+                Isso pode indicar: (1) leads duplicados na agência, (2) formulários com erros, 
+                (3) leads não integrados, ou (4) definição diferente de "lead".
+              </p>
+            </div>
+          </div>
+
+          {/* Auditoria: ROI Real vs ROI Bruto */}
+          <div className="bg-white rounded-xl border overflow-hidden">
+            <div className="px-6 py-4 bg-amber-50 border-b border-amber-200">
+              <div className="flex items-center gap-2">
+                <Scale className="w-5 h-5 text-amber-600" />
+                <h3 className="text-lg font-semibold text-amber-900">ROI Real (com margem) vs ROI Bruto</h3>
+              </div>
+            </div>
+            
+            <div className="p-6">
+              <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                <div className="rounded-xl border-2 border-gray-200 p-4">
+                  <p className="text-xs font-medium text-gray-500 uppercase">ROI Bruto (atual)</p>
+                  <p className="text-3xl font-bold text-gray-900">{data.roi_percentual.toFixed(0)}%</p>
+                  <p className="text-xs text-gray-500 mt-1">Faturamento ÷ Investimento</p>
+                </div>
+                
+                <div className="rounded-xl border-2 border-amber-200 bg-amber-50 p-4">
+                  <p className="text-xs font-medium text-amber-600 uppercase">ROI Real (15% margem)</p>
+                  <p className="text-3xl font-bold text-amber-700">
+                    {((data.valor_vendido * 0.15) / data.investimento_total * 100).toFixed(0)}%
+                  </p>
+                  <p className="text-xs text-amber-600 mt-1">Cenário pessimista</p>
+                </div>
+                
+                <div className="rounded-xl border-2 border-emerald-200 bg-emerald-50 p-4">
+                  <p className="text-xs font-medium text-emerald-600 uppercase">ROI Real (20% margem)</p>
+                  <p className="text-3xl font-bold text-emerald-700">
+                    {((data.valor_vendido * 0.20) / data.investimento_total * 100).toFixed(0)}%
+                  </p>
+                  <p className="text-xs text-emerald-600 mt-1">Cenário base</p>
+                </div>
+                
+                <div className="rounded-xl border-2 border-blue-200 bg-blue-50 p-4">
+                  <p className="text-xs font-medium text-blue-600 uppercase">ROI Real (25% margem)</p>
+                  <p className="text-3xl font-bold text-blue-700">
+                    {((data.valor_vendido * 0.25) / data.investimento_total * 100).toFixed(0)}%
+                  </p>
+                  <p className="text-xs text-blue-600 mt-1">Cenário otimista</p>
+                </div>
+              </div>
+              
+              <div className="mt-4 p-4 bg-gray-50 rounded-lg">
+                <p className="text-sm text-gray-600">
+                  <strong>Interpretação:</strong> O ROI de {data.roi_percentual.toFixed(0)}% é sobre faturamento, não lucro.
+                  Considerando margem de 20%, o ROI real é de{' '}
+                  <strong className="text-emerald-600">
+                    {((data.valor_vendido * 0.20) / data.investimento_total * 100).toFixed(0)}%
+                  </strong>.
+                  Cada R$ 1 investido gera R$ {((data.valor_vendido * 0.20) / data.investimento_total).toFixed(2)} de lucro bruto.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Qualidade do Lead */}
+          <div className="bg-white rounded-xl border overflow-hidden">
+            <div className="px-6 py-4 bg-gradient-to-r from-purple-600 to-indigo-600">
+              <div className="flex items-center gap-2">
+                <Percent className="w-5 h-5 text-white" />
+                <h3 className="text-lg font-semibold text-white">Qualidade do Lead (Diagnóstico)</h3>
+              </div>
+            </div>
+            
+            <div className="p-6 space-y-6">
+              {/* Comparativo Mídia vs Indicação */}
+              <div className="grid lg:grid-cols-2 gap-4">
+                <div className="rounded-xl border-2 border-red-200 bg-red-50 p-5">
+                  <div className="flex items-center gap-2 mb-3">
+                    <Snowflake className="w-5 h-5 text-red-500" />
+                    <span className="font-semibold text-red-900">Mídia Paga</span>
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <p className="text-xs text-red-600">Taxa Conversão</p>
+                      <p className="text-2xl font-bold text-red-700">
+                        {qualidade.resumo_midia.taxa_conversao}%
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-xs text-red-600">Custo/Venda</p>
+                      <p className="text-2xl font-bold text-red-700">
+                        {formatCurrency(qualidade.resumo_midia.custo_por_venda)}
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-xs text-red-600">Leads Perdidos</p>
+                      <p className="text-xl font-bold text-red-700">
+                        {formatNumber(qualidade.resumo_midia.perdidos)}
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-xs text-red-600">Leads Frios</p>
+                      <p className="text-xl font-bold text-red-700">
+                        {qualidade.leads_frios_percentual}%
+                      </p>
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="rounded-xl border-2 border-emerald-200 bg-emerald-50 p-5">
+                  <div className="flex items-center gap-2 mb-3">
+                    <Flame className="w-5 h-5 text-emerald-500" />
+                    <span className="font-semibold text-emerald-900">Indicação (benchmark)</span>
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <p className="text-xs text-emerald-600">Taxa Conversão</p>
+                      <p className="text-2xl font-bold text-emerald-700">
+                        {qualidade.comparativo_indicacao.taxa_conversao}%
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-xs text-emerald-600">Custo/Venda</p>
+                      <p className="text-2xl font-bold text-emerald-700">R$ 0</p>
+                    </div>
+                    <div>
+                      <p className="text-xs text-emerald-600">Multiplicador</p>
+                      <p className="text-xl font-bold text-emerald-700">
+                        {qualidade.comparativo_indicacao.multiplicador}x melhor
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-xs text-emerald-600">Leads</p>
+                      <p className="text-xl font-bold text-emerald-700">
+                        {formatNumber(qualidade.comparativo_indicacao.total_leads)}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Motivos de Perda */}
+              <div>
+                <h4 className="font-medium text-gray-900 mb-3 flex items-center gap-2">
+                  <XCircle className="w-4 h-4 text-red-500" />
+                  Top Motivos de Perda (mídia paga)
+                </h4>
+                <div className="grid grid-cols-2 lg:grid-cols-5 gap-3">
+                  {qualidade.motivos_perda.slice(0, 5).map((m, i) => (
+                    <div key={m.motivo} className="rounded-lg bg-gray-50 p-3">
+                      <p className="text-xs text-gray-500 truncate" title={m.motivo}>
+                        {i + 1}. {m.motivo}
+                      </p>
+                      <p className="text-lg font-bold text-gray-900">{m.percentual}%</p>
+                      <p className="text-xs text-gray-500">{m.quantidade} leads</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* ========== COBRANÇAS PARA AGÊNCIA ========== */}
+          <div className="bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-900 rounded-xl p-6 text-white">
+            <div className="flex items-center gap-3 mb-6">
+              <ClipboardList className="w-6 h-6 text-purple-300" />
+              <div>
+                <h3 className="text-xl font-bold">📋 Cobranças para Agência (próximos 7 dias)</h3>
+                <p className="text-purple-300 text-sm">Ações para apresentar e exigir da agência</p>
+              </div>
+            </div>
+            
+            <div className="grid lg:grid-cols-2 gap-6">
+              {/* Cobranças Imediatas */}
+              <div className="bg-white/10 rounded-xl p-5">
+                <h4 className="font-semibold text-purple-200 mb-4 flex items-center gap-2">
+                  <AlertTriangle className="w-4 h-4" />
+                  Exigir Imediatamente
+                </h4>
+                <ul className="space-y-3">
+                  <li className="flex items-start gap-3">
+                    <span className="w-6 h-6 rounded-full bg-red-500 flex items-center justify-center text-xs font-bold shrink-0">1</span>
+                    <div>
+                      <p className="font-medium">Explicar o gap de {formatNumber(data.leads_agencia - data.leads_crm)} leads</p>
+                      <p className="text-sm text-purple-300">
+                        Agência reporta {formatNumber(data.leads_agencia)}, mas só {formatNumber(data.leads_crm)} chegam ao CRM.
+                        Onde estão os outros {((data.leads_agencia - data.leads_crm) / data.leads_agencia * 100).toFixed(0)}%?
+                      </p>
+                    </div>
+                  </li>
+                  <li className="flex items-start gap-3">
+                    <span className="w-6 h-6 rounded-full bg-red-500 flex items-center justify-center text-xs font-bold shrink-0">2</span>
+                    <div>
+                      <p className="font-medium">Segmentação: {qualidade.leads_frios_percentual}% dos leads são frios</p>
+                      <p className="text-sm text-purple-300">
+                        "Sem Interesse" e "Não Responde" somam mais da metade das perdas. 
+                        Estão atraindo curiosos, não compradores.
+                      </p>
+                    </div>
+                  </li>
+                  <li className="flex items-start gap-3">
+                    <span className="w-6 h-6 rounded-full bg-amber-500 flex items-center justify-center text-xs font-bold shrink-0">3</span>
+                    <div>
+                      <p className="font-medium">UTMs e rastreamento correto</p>
+                      <p className="text-sm text-purple-300">
+                        Google tem só {data.google.leads_crm} leads no CRM mas agência reporta {data.google.leads_agencia}.
+                        UTMs podem estar erradas ou não integradas.
+                      </p>
+                    </div>
+                  </li>
+                </ul>
+              </div>
+              
+              {/* Exigências de Relatório */}
+              <div className="bg-white/10 rounded-xl p-5">
+                <h4 className="font-semibold text-purple-200 mb-4 flex items-center gap-2">
+                  <FileWarning className="w-4 h-4" />
+                  Exigir no Relatório Semanal
+                </h4>
+                <ul className="space-y-3">
+                  <li className="flex items-start gap-3">
+                    <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0 mt-0.5" />
+                    <div>
+                      <p className="font-medium">% de leads qualificados (SDR)</p>
+                      <p className="text-sm text-purple-300">Quantos leads passaram por SDR e foram considerados qualificados?</p>
+                    </div>
+                  </li>
+                  <li className="flex items-start gap-3">
+                    <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0 mt-0.5" />
+                    <div>
+                      <p className="font-medium">% de agendamentos / qualificados</p>
+                      <p className="text-sm text-purple-300">Dos qualificados, quantos agendaram visita?</p>
+                    </div>
+                  </li>
+                  <li className="flex items-start gap-3">
+                    <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0 mt-0.5" />
+                    <div>
+                      <p className="font-medium">Custo por venda (CRM) por canal</p>
+                      <p className="text-sm text-purple-300">
+                        META: {formatCurrency(data.meta.custo_por_venda)} | 
+                        Google: {formatCurrency(data.google.custo_por_venda)}
+                      </p>
+                    </div>
+                  </li>
+                  <li className="flex items-start gap-3">
+                    <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0 mt-0.5" />
+                    <div>
+                      <p className="font-medium">SLA de primeira resposta</p>
+                      <p className="text-sm text-purple-300">
+                        {qualidade.motivos_perda.find(m => m.motivo.includes('Responde'))?.quantidade || 0} leads 
+                        perdidos por "não responde". Qual o tempo médio de primeira resposta?
+                      </p>
+                    </div>
+                  </li>
+                </ul>
+              </div>
+            </div>
+            
+            {/* Proposta de Realocação */}
+            <div className="mt-6 bg-white/5 rounded-xl p-5">
+              <h4 className="font-semibold text-purple-200 mb-4 flex items-center gap-2">
+                <Send className="w-4 h-4" />
+                Proposta de Realocação de Budget
+              </h4>
+              
+              <div className="grid lg:grid-cols-3 gap-4">
+                <div className="bg-emerald-500/20 rounded-lg p-4 border border-emerald-400/30">
+                  <p className="text-sm text-emerald-300 font-medium">✅ MANTER / AUMENTAR</p>
+                  <ul className="mt-2 text-sm space-y-1">
+                    <li>• META (ROI {data.meta.roi.toFixed(0)}%)</li>
+                    <li>• Remarketing (leads quentes)</li>
+                    <li>• Criativos com filtro de preço</li>
+                  </ul>
+                </div>
+                
+                <div className="bg-amber-500/20 rounded-lg p-4 border border-amber-400/30">
+                  <p className="text-sm text-amber-300 font-medium">⚠️ REVISAR / OTIMIZAR</p>
+                  <ul className="mt-2 text-sm space-y-1">
+                    <li>• Google Search (ROI {data.google.roi.toFixed(0)}%)</li>
+                    <li>• Segmentação lookalike</li>
+                    <li>• Landing pages de captura</li>
+                  </ul>
+                </div>
+                
+                <div className="bg-red-500/20 rounded-lg p-4 border border-red-400/30">
+                  <p className="text-sm text-red-300 font-medium">❌ REDUZIR / PAUSAR</p>
+                  <ul className="mt-2 text-sm space-y-1">
+                    <li>• Campanhas de alcance puro</li>
+                    <li>• Públicos frios sem filtro</li>
+                    <li>• Anúncios sem preço/qualificação</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+            
+            {/* Decisão Final */}
+            <div className="mt-6 p-4 bg-white/10 rounded-xl">
+              <p className="text-lg font-semibold text-center">
+                {data.roi_percentual > 500 ? (
+                  <>🟢 ROI positivo. Manter por 14-30 dias <strong>com condição</strong>: melhorar qualidade do lead ou realocar budget.</>
+                ) : data.roi_percentual > 200 ? (
+                  <>🟡 ROI aceitável. Exigir melhorias em qualificação antes de renovar contrato.</>
+                ) : (
+                  <>🔴 ROI baixo. Avaliar troca de agência ou redução drástica de budget.</>
+                )}
+              </p>
+            </div>
+          </div>
+        </>
+      )}
     </div>
   );
 }
