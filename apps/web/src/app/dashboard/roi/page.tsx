@@ -542,7 +542,44 @@ export default function ROIDashboardPage() {
         </div>
       )}
 
-      {/* KPIs Principais */}
+      {/* KPIs Totais (Todos os Leads) */}
+      <div className="bg-gradient-to-r from-slate-800 to-slate-700 rounded-xl p-5">
+        <div className="flex items-center gap-2 mb-4">
+          <BarChart3 className="w-5 h-5 text-slate-300" />
+          <h3 className="text-lg font-semibold text-white">📊 Visão Geral CRM (TODOS os Leads)</h3>
+          <Tooltip content="📊 FONTE: Tabela crm_negocio SEM filtro de origem/canal. Inclui: Mídia Paga, Indicação, Loja, Telefone, etc.">
+            <Info className="w-4 h-4 text-slate-400 cursor-help" />
+          </Tooltip>
+        </div>
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="bg-white/10 rounded-lg p-4">
+            <p className="text-xs text-slate-300 uppercase">Total Leads</p>
+            <p className="text-3xl font-bold text-white">{formatNumber(data.leads_crm_total)}</p>
+            <p className="text-xs text-slate-400 mt-1">Todas as origens</p>
+          </div>
+          <div className="bg-white/10 rounded-lg p-4">
+            <p className="text-xs text-slate-300 uppercase">Total Vendas</p>
+            <p className="text-3xl font-bold text-emerald-400">{formatNumber(data.vendas_crm_total)}</p>
+            <p className="text-xs text-slate-400 mt-1">{formatCurrency(data.valor_vendido_total)}</p>
+          </div>
+          <div className="bg-white/10 rounded-lg p-4">
+            <p className="text-xs text-slate-300 uppercase">Taxa Conversão Geral</p>
+            <p className="text-3xl font-bold text-blue-400">
+              {data.leads_crm_total > 0 ? ((data.vendas_crm_total / data.leads_crm_total) * 100).toFixed(1) : 0}%
+            </p>
+            <p className="text-xs text-slate-400 mt-1">Vendas ÷ Leads</p>
+          </div>
+          <div className="bg-white/10 rounded-lg p-4">
+            <p className="text-xs text-slate-300 uppercase">Leads Mídia Paga</p>
+            <p className="text-3xl font-bold text-amber-400">{formatNumber(data.leads_crm)}</p>
+            <p className="text-xs text-slate-400 mt-1">
+              {data.leads_crm_total > 0 ? ((data.leads_crm / data.leads_crm_total) * 100).toFixed(0) : 0}% do total
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* KPIs Mídia Paga (Análise de ROI) */}
       <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
         <MetricCard
           title="Investimento Total"
@@ -559,15 +596,15 @@ export default function ROIDashboardPage() {
           tooltip="📊 FONTE: Relatórios da agência Voren. Soma de 'conversões' reportadas nos relatórios mensais de META + Google Ads"
         />
         <MetricCard
-          title="Leads CRM"
+          title="Leads Mídia (CRM)"
           value={formatNumber(data.leads_crm)}
-          subtitle="Entrada real"
+          subtitle={`de ${formatNumber(data.leads_crm_total)} totais`}
           icon={Users}
           color={data.leads_crm < data.leads_agencia * 0.8 ? 'warning' : 'default'}
           tooltip="📊 FONTE: Banco CRM MySQL (tabela crm_negocio). Query: WHERE (origem IN ('INSTAGRAM','FACEBOOK','GOOGLE') OR canal IN (...)) AND date_create entre período"
         />
         <MetricCard
-          title="Vendas"
+          title="Vendas Mídia"
           value={formatNumber(data.vendas_crm)}
           subtitle={formatCurrency(data.valor_vendido)}
           icon={Target}
@@ -575,7 +612,7 @@ export default function ROIDashboardPage() {
           tooltip="📊 FONTE: CRM MySQL. Query: WHERE id_state = 6 (GANHO) AND (origem/canal = mídia paga). Valor = SUM(valor) dos negócios ganhos"
         />
         <MetricCard
-          title="ROI"
+          title="ROI Mídia"
           value={`${data.roi_percentual.toFixed(0)}%`}
           subtitle="Retorno/Investimento"
           icon={TrendingUp}
