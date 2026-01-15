@@ -22,8 +22,24 @@ import {
   Scale,
   Flame,
   Snowflake,
-  ClipboardList
+  ClipboardList,
+  Info
 } from 'lucide-react';
+
+// Componente Tooltip
+function Tooltip({ children, content }: { children: React.ReactNode; content: string }) {
+  return (
+    <div className="group relative inline-block">
+      {children}
+      <div className="pointer-events-none absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-64 opacity-0 transition-opacity group-hover:opacity-100 z-50">
+        <div className="bg-gray-900 text-white text-xs rounded-lg px-3 py-2 shadow-lg">
+          {content}
+          <div className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-gray-900"></div>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 interface DashboardData {
   periodo: string;
@@ -180,7 +196,8 @@ function MetricCard({
   subtitle,
   icon: Icon,
   trend,
-  color = 'default'
+  color = 'default',
+  tooltip
 }: { 
   title: string; 
   value: string; 
@@ -188,6 +205,7 @@ function MetricCard({
   icon?: any;
   trend?: 'up' | 'down' | 'neutral';
   color?: 'default' | 'success' | 'warning' | 'danger';
+  tooltip?: string;
 }) {
   const colorClasses = {
     default: 'bg-white',
@@ -207,7 +225,14 @@ function MetricCard({
     <div className={`rounded-xl border p-5 ${colorClasses[color]} transition-all hover:shadow-md`}>
       <div className="flex items-start justify-between">
         <div>
-          <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">{title}</p>
+          <div className="flex items-center gap-1">
+            <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">{title}</p>
+            {tooltip && (
+              <Tooltip content={tooltip}>
+                <Info className="w-3.5 h-3.5 text-gray-400 cursor-help" />
+              </Tooltip>
+            )}
+          </div>
           <p className="mt-2 text-2xl font-semibold text-gray-900">{value}</p>
           {subtitle && <p className="mt-1 text-sm text-gray-500">{subtitle}</p>}
         </div>
@@ -241,11 +266,17 @@ function ComparisonCard({
 }) {
   const bgColor = platform === 'meta' ? 'from-blue-500 to-indigo-600' : 'from-emerald-500 to-teal-600';
   const lightBg = platform === 'meta' ? 'bg-blue-50' : 'bg-emerald-50';
+  const platformName = platform === 'meta' ? 'META (FB/IG)' : 'Google Ads';
   
   return (
     <div className="bg-white rounded-xl border overflow-hidden">
       <div className={`bg-gradient-to-r ${bgColor} px-5 py-4`}>
-        <h3 className="text-lg font-semibold text-white">{title}</h3>
+        <div className="flex items-center gap-2">
+          <h3 className="text-lg font-semibold text-white">{title}</h3>
+          <Tooltip content={`📊 FONTE: Investimento do relatório da agência Voren para ${platformName}`}>
+            <Info className="w-4 h-4 text-white/70 cursor-help" />
+          </Tooltip>
+        </div>
         <p className="text-white/80 text-sm">
           Investimento: {formatCurrency(data.investimento)}
         </p>
@@ -254,7 +285,12 @@ function ComparisonCard({
       <div className="p-5 space-y-4">
         {/* Leads Comparison */}
         <div className={`${lightBg} rounded-lg p-4`}>
-          <p className="text-xs font-medium text-gray-500 uppercase">Leads</p>
+          <div className="flex items-center gap-1">
+            <p className="text-xs font-medium text-gray-500 uppercase">Leads</p>
+            <Tooltip content={`📊 Agência: Conversões reportadas nos relatórios de ${platformName}. CRM: Query MySQL WHERE origem/canal = ${platform === 'meta' ? 'INSTAGRAM/FACEBOOK' : 'GOOGLE'}`}>
+              <Info className="w-3 h-3 text-gray-400 cursor-help" />
+            </Tooltip>
+          </div>
           <div className="mt-2 flex items-center justify-between">
             <div>
               <p className="text-sm text-gray-500">Agência reporta</p>
@@ -271,12 +307,22 @@ function ComparisonCard({
         {/* Vendas */}
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <p className="text-xs font-medium text-gray-500 uppercase">Vendas</p>
+            <div className="flex items-center gap-1">
+              <p className="text-xs font-medium text-gray-500 uppercase">Vendas</p>
+              <Tooltip content={`📊 FONTE: CRM MySQL. Query: WHERE id_state = 6 (GANHO) AND origem/canal = ${platform === 'meta' ? 'INSTAGRAM/FACEBOOK' : 'GOOGLE'}`}>
+                <Info className="w-3 h-3 text-gray-400 cursor-help" />
+              </Tooltip>
+            </div>
             <p className="text-2xl font-bold text-gray-900">{data.vendas}</p>
             <p className="text-sm text-gray-500">{formatCurrency(data.valor_vendido)}</p>
           </div>
           <div>
-            <p className="text-xs font-medium text-gray-500 uppercase">ROI</p>
+            <div className="flex items-center gap-1">
+              <p className="text-xs font-medium text-gray-500 uppercase">ROI</p>
+              <Tooltip content={`📐 FÓRMULA: (Valor Vendido ÷ Investimento) × 100 = (${formatCurrency(data.valor_vendido)} ÷ ${formatCurrency(data.investimento)}) × 100 = ${data.roi.toFixed(0)}%`}>
+                <Info className="w-3 h-3 text-gray-400 cursor-help" />
+              </Tooltip>
+            </div>
             <p className={`text-2xl font-bold ${data.roi > 100 ? 'text-emerald-600' : 'text-gray-900'}`}>
               {data.roi.toFixed(0)}%
             </p>
@@ -287,11 +333,21 @@ function ComparisonCard({
         {/* Custos */}
         <div className="border-t pt-4 grid grid-cols-2 gap-4">
           <div>
-            <p className="text-xs font-medium text-gray-500">Custo/Lead</p>
+            <div className="flex items-center gap-1">
+              <p className="text-xs font-medium text-gray-500">Custo/Lead</p>
+              <Tooltip content={`📐 FÓRMULA: Investimento ${platformName} ÷ Leads CRM = ${formatCurrency(data.investimento)} ÷ ${formatNumber(data.leads_crm)} = ${formatCurrency(data.custo_por_lead)}`}>
+                <Info className="w-3 h-3 text-gray-400 cursor-help" />
+              </Tooltip>
+            </div>
             <p className="text-lg font-semibold">{formatCurrency(data.custo_por_lead)}</p>
           </div>
           <div>
-            <p className="text-xs font-medium text-gray-500">Custo/Venda</p>
+            <div className="flex items-center gap-1">
+              <p className="text-xs font-medium text-gray-500">Custo/Venda</p>
+              <Tooltip content={`📐 FÓRMULA: Investimento ${platformName} ÷ Vendas = ${formatCurrency(data.investimento)} ÷ ${data.vendas} = ${formatCurrency(data.custo_por_venda)}`}>
+                <Info className="w-3 h-3 text-gray-400 cursor-help" />
+              </Tooltip>
+            </div>
             <p className="text-lg font-semibold">{formatCurrency(data.custo_por_venda)}</p>
           </div>
         </div>
@@ -493,12 +549,14 @@ export default function ROIDashboardPage() {
           value={formatCurrency(data.investimento_total)}
           subtitle="Mídia paga"
           icon={DollarSign}
+          tooltip="📊 FONTE: Relatórios da agência Voren (hardcoded em roi_api.py). Out: R$15.500 + Nov: R$15.628 + Dez: R$15.470 + Jan (14 dias pró-rata): ~R$7.000 = R$53.598"
         />
         <MetricCard
           title="Leads Agência"
           value={formatNumber(data.leads_agencia)}
           subtitle="Reportados"
           icon={Users}
+          tooltip="📊 FONTE: Relatórios da agência Voren. Soma de 'conversões' reportadas nos relatórios mensais de META + Google Ads"
         />
         <MetricCard
           title="Leads CRM"
@@ -506,6 +564,7 @@ export default function ROIDashboardPage() {
           subtitle="Entrada real"
           icon={Users}
           color={data.leads_crm < data.leads_agencia * 0.8 ? 'warning' : 'default'}
+          tooltip="📊 FONTE: Banco CRM MySQL (tabela crm_negocio). Query: WHERE (origem IN ('INSTAGRAM','FACEBOOK','GOOGLE') OR canal IN (...)) AND date_create entre período"
         />
         <MetricCard
           title="Vendas"
@@ -513,6 +572,7 @@ export default function ROIDashboardPage() {
           subtitle={formatCurrency(data.valor_vendido)}
           icon={Target}
           color="success"
+          tooltip="📊 FONTE: CRM MySQL. Query: WHERE id_state = 6 (GANHO) AND (origem/canal = mídia paga). Valor = SUM(valor) dos negócios ganhos"
         />
         <MetricCard
           title="ROI"
@@ -520,6 +580,7 @@ export default function ROIDashboardPage() {
           subtitle="Retorno/Investimento"
           icon={TrendingUp}
           color={data.roi_percentual > 200 ? 'success' : data.roi_percentual > 100 ? 'default' : 'danger'}
+          tooltip={`📐 FÓRMULA: (Valor Vendido ÷ Investimento) × 100 = (${formatCurrency(data.valor_vendido)} ÷ ${formatCurrency(data.investimento_total)}) × 100 = ${data.roi_percentual.toFixed(0)}%. ⚠️ Este é ROI bruto (faturamento), não lucro!`}
         />
       </div>
 
@@ -529,17 +590,32 @@ export default function ROIDashboardPage() {
         
         <div className="mt-4 grid grid-cols-3 gap-8">
           <div>
-            <p className="text-sm text-gray-400">Custo por Lead (Agência)</p>
+            <div className="flex items-center gap-1">
+              <p className="text-sm text-gray-400">Custo por Lead (Agência)</p>
+              <Tooltip content={`📐 FÓRMULA: Investimento ÷ Leads Agência = ${formatCurrency(data.investimento_total)} ÷ ${formatNumber(data.leads_agencia)} = ${formatCurrency(data.custo_por_lead_agencia)}`}>
+                <Info className="w-3.5 h-3.5 text-gray-500 cursor-help" />
+              </Tooltip>
+            </div>
             <p className="text-2xl font-semibold">{formatCurrency(data.custo_por_lead_agencia)}</p>
             <p className="text-xs text-gray-500">o que a agência calcula</p>
           </div>
           <div>
-            <p className="text-sm text-gray-400">Custo por Lead (Real)</p>
+            <div className="flex items-center gap-1">
+              <p className="text-sm text-gray-400">Custo por Lead (Real)</p>
+              <Tooltip content={`📐 FÓRMULA: Investimento ÷ Leads CRM = ${formatCurrency(data.investimento_total)} ÷ ${formatNumber(data.leads_crm)} = ${formatCurrency(data.custo_por_lead_real)}. ⚠️ 3x mais caro que a agência diz!`}>
+                <Info className="w-3.5 h-3.5 text-gray-500 cursor-help" />
+              </Tooltip>
+            </div>
             <p className="text-2xl font-semibold text-amber-400">{formatCurrency(data.custo_por_lead_real)}</p>
             <p className="text-xs text-gray-500">baseado no CRM</p>
           </div>
           <div>
-            <p className="text-sm text-gray-400">Custo por Venda</p>
+            <div className="flex items-center gap-1">
+              <p className="text-sm text-gray-400">Custo por Venda</p>
+              <Tooltip content={`📐 FÓRMULA: Investimento ÷ Vendas = ${formatCurrency(data.investimento_total)} ÷ ${formatNumber(data.vendas_crm)} = ${formatCurrency(data.custo_por_venda)}`}>
+                <Info className="w-3.5 h-3.5 text-gray-500 cursor-help" />
+              </Tooltip>
+            </div>
             <p className="text-2xl font-semibold text-emerald-400">{formatCurrency(data.custo_por_venda)}</p>
             <p className="text-xs text-gray-500">o que realmente importa</p>
           </div>
@@ -752,19 +828,37 @@ export default function ROIDashboardPage() {
             <div className="flex items-center gap-3 mb-4">
               <ShieldAlert className="w-6 h-6 text-red-300" />
               <h3 className="text-lg font-bold">🔍 Auditoria: Gap Agência vs CRM</h3>
+              <Tooltip content="Esta seção compara os leads reportados pela agência Voren (fonte: relatórios mensais hardcoded) com os leads reais no CRM (fonte: MySQL crm_negocio)">
+                <Info className="w-4 h-4 text-red-300 cursor-help" />
+              </Tooltip>
             </div>
             
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
               <div className="bg-white/10 rounded-lg p-4">
-                <p className="text-sm text-red-200">Leads Agência Reporta</p>
+                <div className="flex items-center gap-1">
+                  <p className="text-sm text-red-200">Leads Agência Reporta</p>
+                  <Tooltip content="📊 FONTE: Relatórios da agência Voren. Soma das 'conversões' de META + Google por mês (hardcoded em roi_api.py AGENCY_DATA)">
+                    <Info className="w-3 h-3 text-red-300 cursor-help" />
+                  </Tooltip>
+                </div>
                 <p className="text-3xl font-bold">{formatNumber(data.leads_agencia)}</p>
               </div>
               <div className="bg-white/10 rounded-lg p-4">
-                <p className="text-sm text-red-200">Leads no CRM</p>
+                <div className="flex items-center gap-1">
+                  <p className="text-sm text-red-200">Leads no CRM</p>
+                  <Tooltip content="📊 FONTE: MySQL crm_negocio. Query: WHERE (origem IN ('INSTAGRAM','FACEBOOK','GOOGLE') OR canal IN (...)) AND date_create entre período">
+                    <Info className="w-3 h-3 text-red-300 cursor-help" />
+                  </Tooltip>
+                </div>
                 <p className="text-3xl font-bold">{formatNumber(data.leads_crm)}</p>
               </div>
               <div className="bg-red-500/30 rounded-lg p-4 border border-red-400">
-                <p className="text-sm text-red-200">GAP (leads perdidos)</p>
+                <div className="flex items-center gap-1">
+                  <p className="text-sm text-red-200">GAP (leads perdidos)</p>
+                  <Tooltip content={`📐 FÓRMULA: Leads Agência - Leads CRM = ${formatNumber(data.leads_agencia)} - ${formatNumber(data.leads_crm)} = ${formatNumber(data.leads_agencia - data.leads_crm)} leads não encontrados no CRM`}>
+                    <Info className="w-3 h-3 text-red-300 cursor-help" />
+                  </Tooltip>
+                </div>
                 <p className="text-3xl font-bold text-red-300">
                   {formatNumber(data.leads_agencia - data.leads_crm)}
                 </p>
@@ -773,7 +867,12 @@ export default function ROIDashboardPage() {
                 </p>
               </div>
               <div className="bg-white/10 rounded-lg p-4">
-                <p className="text-sm text-red-200">Taxa de Aproveitamento</p>
+                <div className="flex items-center gap-1">
+                  <p className="text-sm text-red-200">Taxa de Aproveitamento</p>
+                  <Tooltip content={`📐 FÓRMULA: (Leads CRM ÷ Leads Agência) × 100 = (${formatNumber(data.leads_crm)} ÷ ${formatNumber(data.leads_agencia)}) × 100 = ${(data.leads_crm / data.leads_agencia * 100).toFixed(1)}%`}>
+                    <Info className="w-3 h-3 text-red-300 cursor-help" />
+                  </Tooltip>
+                </div>
                 <p className="text-3xl font-bold text-amber-400">
                   {(data.leads_crm / data.leads_agencia * 100).toFixed(1)}%
                 </p>
@@ -796,19 +895,32 @@ export default function ROIDashboardPage() {
               <div className="flex items-center gap-2">
                 <Scale className="w-5 h-5 text-amber-600" />
                 <h3 className="text-lg font-semibold text-amber-900">ROI Real (com margem) vs ROI Bruto</h3>
+                <Tooltip content="O ROI Bruto considera faturamento total. O ROI Real considera apenas o lucro (margem). A margem média de seminovos fica entre 15-25%.">
+                  <Info className="w-4 h-4 text-amber-600 cursor-help" />
+                </Tooltip>
               </div>
             </div>
             
             <div className="p-6">
               <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
                 <div className="rounded-xl border-2 border-gray-200 p-4">
-                  <p className="text-xs font-medium text-gray-500 uppercase">ROI Bruto (atual)</p>
+                  <div className="flex items-center gap-1">
+                    <p className="text-xs font-medium text-gray-500 uppercase">ROI Bruto (atual)</p>
+                    <Tooltip content={`📐 FÓRMULA: (Faturamento ÷ Investimento) × 100 = (${formatCurrency(data.valor_vendido)} ÷ ${formatCurrency(data.investimento_total)}) × 100 = ${data.roi_percentual.toFixed(0)}%`}>
+                      <Info className="w-3 h-3 text-gray-400 cursor-help" />
+                    </Tooltip>
+                  </div>
                   <p className="text-3xl font-bold text-gray-900">{data.roi_percentual.toFixed(0)}%</p>
                   <p className="text-xs text-gray-500 mt-1">Faturamento ÷ Investimento</p>
                 </div>
                 
                 <div className="rounded-xl border-2 border-amber-200 bg-amber-50 p-4">
-                  <p className="text-xs font-medium text-amber-600 uppercase">ROI Real (15% margem)</p>
+                  <div className="flex items-center gap-1">
+                    <p className="text-xs font-medium text-amber-600 uppercase">ROI Real (15% margem)</p>
+                    <Tooltip content={`📐 FÓRMULA: (Faturamento × 15% ÷ Investimento) × 100 = (${formatCurrency(data.valor_vendido)} × 0.15 ÷ ${formatCurrency(data.investimento_total)}) × 100 = ${((data.valor_vendido * 0.15) / data.investimento_total * 100).toFixed(0)}%`}>
+                      <Info className="w-3 h-3 text-amber-500 cursor-help" />
+                    </Tooltip>
+                  </div>
                   <p className="text-3xl font-bold text-amber-700">
                     {((data.valor_vendido * 0.15) / data.investimento_total * 100).toFixed(0)}%
                   </p>
@@ -816,7 +928,12 @@ export default function ROIDashboardPage() {
                 </div>
                 
                 <div className="rounded-xl border-2 border-emerald-200 bg-emerald-50 p-4">
-                  <p className="text-xs font-medium text-emerald-600 uppercase">ROI Real (20% margem)</p>
+                  <div className="flex items-center gap-1">
+                    <p className="text-xs font-medium text-emerald-600 uppercase">ROI Real (20% margem)</p>
+                    <Tooltip content={`📐 FÓRMULA: (Faturamento × 20% ÷ Investimento) × 100 = (${formatCurrency(data.valor_vendido)} × 0.20 ÷ ${formatCurrency(data.investimento_total)}) × 100 = ${((data.valor_vendido * 0.20) / data.investimento_total * 100).toFixed(0)}%`}>
+                      <Info className="w-3 h-3 text-emerald-500 cursor-help" />
+                    </Tooltip>
+                  </div>
                   <p className="text-3xl font-bold text-emerald-700">
                     {((data.valor_vendido * 0.20) / data.investimento_total * 100).toFixed(0)}%
                   </p>
@@ -824,7 +941,12 @@ export default function ROIDashboardPage() {
                 </div>
                 
                 <div className="rounded-xl border-2 border-blue-200 bg-blue-50 p-4">
-                  <p className="text-xs font-medium text-blue-600 uppercase">ROI Real (25% margem)</p>
+                  <div className="flex items-center gap-1">
+                    <p className="text-xs font-medium text-blue-600 uppercase">ROI Real (25% margem)</p>
+                    <Tooltip content={`📐 FÓRMULA: (Faturamento × 25% ÷ Investimento) × 100 = (${formatCurrency(data.valor_vendido)} × 0.25 ÷ ${formatCurrency(data.investimento_total)}) × 100 = ${((data.valor_vendido * 0.25) / data.investimento_total * 100).toFixed(0)}%`}>
+                      <Info className="w-3 h-3 text-blue-500 cursor-help" />
+                    </Tooltip>
+                  </div>
                   <p className="text-3xl font-bold text-blue-700">
                     {((data.valor_vendido * 0.25) / data.investimento_total * 100).toFixed(0)}%
                   </p>
@@ -861,28 +983,51 @@ export default function ROIDashboardPage() {
                   <div className="flex items-center gap-2 mb-3">
                     <Snowflake className="w-5 h-5 text-red-500" />
                     <span className="font-semibold text-red-900">Mídia Paga</span>
+                    <Tooltip content="📊 FONTE: CRM MySQL. Leads onde origem ou canal = INSTAGRAM, FACEBOOK, GOOGLE">
+                      <Info className="w-3.5 h-3.5 text-red-400 cursor-help" />
+                    </Tooltip>
                   </div>
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <p className="text-xs text-red-600">Taxa Conversão</p>
+                      <div className="flex items-center gap-1">
+                        <p className="text-xs text-red-600">Taxa Conversão</p>
+                        <Tooltip content={`📐 FÓRMULA: (Ganhos ÷ Total Leads) × 100 = (${qualidade.resumo_midia.ganhos} ÷ ${qualidade.resumo_midia.total_leads}) × 100 = ${qualidade.resumo_midia.taxa_conversao}%`}>
+                          <Info className="w-2.5 h-2.5 text-red-400 cursor-help" />
+                        </Tooltip>
+                      </div>
                       <p className="text-2xl font-bold text-red-700">
                         {qualidade.resumo_midia.taxa_conversao}%
                       </p>
                     </div>
                     <div>
-                      <p className="text-xs text-red-600">Custo/Venda</p>
+                      <div className="flex items-center gap-1">
+                        <p className="text-xs text-red-600">Custo/Venda</p>
+                        <Tooltip content={`📐 FÓRMULA: Investimento ÷ Vendas = ${formatCurrency(data.investimento_total)} ÷ ${qualidade.resumo_midia.ganhos} = ${formatCurrency(qualidade.resumo_midia.custo_por_venda)}`}>
+                          <Info className="w-2.5 h-2.5 text-red-400 cursor-help" />
+                        </Tooltip>
+                      </div>
                       <p className="text-2xl font-bold text-red-700">
                         {formatCurrency(qualidade.resumo_midia.custo_por_venda)}
                       </p>
                     </div>
                     <div>
-                      <p className="text-xs text-red-600">Leads Perdidos</p>
+                      <div className="flex items-center gap-1">
+                        <p className="text-xs text-red-600">Leads Perdidos</p>
+                        <Tooltip content="📊 FONTE: CRM MySQL. Query: WHERE id_state = 7 (PERDIDO) AND origem/canal = mídia paga">
+                          <Info className="w-2.5 h-2.5 text-red-400 cursor-help" />
+                        </Tooltip>
+                      </div>
                       <p className="text-xl font-bold text-red-700">
                         {formatNumber(qualidade.resumo_midia.perdidos)}
                       </p>
                     </div>
                     <div>
-                      <p className="text-xs text-red-600">Leads Frios</p>
+                      <div className="flex items-center gap-1">
+                        <p className="text-xs text-red-600">Leads Frios</p>
+                        <Tooltip content="📐 FÓRMULA: % de leads perdidos com motivo 'Sem Interesse' ou 'Não Responde'. Indica leads de baixa qualidade da segmentação.">
+                          <Info className="w-2.5 h-2.5 text-red-400 cursor-help" />
+                        </Tooltip>
+                      </div>
                       <p className="text-xl font-bold text-red-700">
                         {qualidade.leads_frios_percentual}%
                       </p>
@@ -894,26 +1039,49 @@ export default function ROIDashboardPage() {
                   <div className="flex items-center gap-2 mb-3">
                     <Flame className="w-5 h-5 text-emerald-500" />
                     <span className="font-semibold text-emerald-900">Indicação (benchmark)</span>
+                    <Tooltip content="📊 FONTE: CRM MySQL. Leads onde origem = 'INDICAÇÃO' ou similar. Benchmark para comparar qualidade.">
+                      <Info className="w-3.5 h-3.5 text-emerald-400 cursor-help" />
+                    </Tooltip>
                   </div>
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <p className="text-xs text-emerald-600">Taxa Conversão</p>
+                      <div className="flex items-center gap-1">
+                        <p className="text-xs text-emerald-600">Taxa Conversão</p>
+                        <Tooltip content={`📐 FÓRMULA: (Ganhos ÷ Total Indicações) × 100 = (${qualidade.comparativo_indicacao.ganhos} ÷ ${qualidade.comparativo_indicacao.total_leads}) × 100 = ${qualidade.comparativo_indicacao.taxa_conversao}%`}>
+                          <Info className="w-2.5 h-2.5 text-emerald-400 cursor-help" />
+                        </Tooltip>
+                      </div>
                       <p className="text-2xl font-bold text-emerald-700">
                         {qualidade.comparativo_indicacao.taxa_conversao}%
                       </p>
                     </div>
                     <div>
-                      <p className="text-xs text-emerald-600">Custo/Venda</p>
+                      <div className="flex items-center gap-1">
+                        <p className="text-xs text-emerald-600">Custo/Venda</p>
+                        <Tooltip content="Indicações são gratuitas - não há custo de aquisição, apenas fidelização orgânica.">
+                          <Info className="w-2.5 h-2.5 text-emerald-400 cursor-help" />
+                        </Tooltip>
+                      </div>
                       <p className="text-2xl font-bold text-emerald-700">R$ 0</p>
                     </div>
                     <div>
-                      <p className="text-xs text-emerald-600">Multiplicador</p>
+                      <div className="flex items-center gap-1">
+                        <p className="text-xs text-emerald-600">Multiplicador</p>
+                        <Tooltip content={`📐 FÓRMULA: Taxa Indicação ÷ Taxa Mídia = ${qualidade.comparativo_indicacao.taxa_conversao}% ÷ ${qualidade.resumo_midia.taxa_conversao}% = ${qualidade.comparativo_indicacao.multiplicador}x`}>
+                          <Info className="w-2.5 h-2.5 text-emerald-400 cursor-help" />
+                        </Tooltip>
+                      </div>
                       <p className="text-xl font-bold text-emerald-700">
                         {qualidade.comparativo_indicacao.multiplicador}x melhor
                       </p>
                     </div>
                     <div>
-                      <p className="text-xs text-emerald-600">Leads</p>
+                      <div className="flex items-center gap-1">
+                        <p className="text-xs text-emerald-600">Leads</p>
+                        <Tooltip content="📊 FONTE: CRM MySQL. Total de leads com origem = INDICAÇÃO no período.">
+                          <Info className="w-2.5 h-2.5 text-emerald-400 cursor-help" />
+                        </Tooltip>
+                      </div>
                       <p className="text-xl font-bold text-emerald-700">
                         {formatNumber(qualidade.comparativo_indicacao.total_leads)}
                       </p>
