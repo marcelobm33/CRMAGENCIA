@@ -2,7 +2,16 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
-import { AlertTriangle, TrendingUp, Users, DollarSign, Target, CheckCircle2 } from 'lucide-react';
+import {
+  AlertTriangle,
+  ArrowRight,
+  CheckCircle2,
+  DollarSign,
+  RefreshCw,
+  Target,
+  TrendingUp,
+  Users,
+} from 'lucide-react';
 
 type PublicReport = {
   generated_at: string;
@@ -45,6 +54,101 @@ function formatNumber(value: number): string {
   return new Intl.NumberFormat('pt-BR').format(value);
 }
 
+function MetricCard({
+  title,
+  value,
+  subtitle,
+  icon: Icon,
+  color = 'default',
+}: {
+  title: string;
+  value: string;
+  subtitle?: string;
+  icon?: any;
+  color?: 'default' | 'success' | 'warning' | 'danger';
+}) {
+  const colorClasses: Record<string, string> = {
+    default: 'bg-white',
+    success: 'bg-emerald-50 border-emerald-200',
+    warning: 'bg-amber-50 border-amber-200',
+    danger: 'bg-red-50 border-red-200',
+  };
+
+  const iconColorClasses: Record<string, string> = {
+    default: 'text-gray-600',
+    success: 'text-emerald-600',
+    warning: 'text-amber-600',
+    danger: 'text-red-600',
+  };
+
+  return (
+    <div className={`rounded-xl border p-5 ${colorClasses[color]} transition-all hover:shadow-md`}>
+      <div className="flex items-start justify-between">
+        <div>
+          <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">{title}</p>
+          <p className="mt-2 text-2xl font-semibold text-gray-900">{value}</p>
+          {subtitle && <p className="mt-1 text-sm text-gray-500">{subtitle}</p>}
+        </div>
+        {Icon && (
+          <div className={`p-2 rounded-lg bg-gray-100 ${iconColorClasses[color]}`}>
+            <Icon className="w-5 h-5" />
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function ComparisonCard({
+  title,
+  platform,
+  data,
+}: {
+  title: string;
+  platform: 'meta' | 'google';
+  data: PublicReport['roi']['meta'] | PublicReport['roi']['google'];
+}) {
+  const bgColor = platform === 'meta' ? 'from-blue-500 to-indigo-600' : 'from-emerald-500 to-teal-600';
+  const lightBg = platform === 'meta' ? 'bg-blue-50' : 'bg-emerald-50';
+
+  return (
+    <div className="bg-white rounded-xl border overflow-hidden">
+      <div className={`bg-gradient-to-r ${bgColor} px-5 py-4`}>
+        <h3 className="text-lg font-semibold text-white">{title}</h3>
+        <p className="text-white/80 text-sm">Investimento: {formatCurrency(data.investimento)}</p>
+      </div>
+
+      <div className="p-5 space-y-4">
+        <div className={`${lightBg} rounded-lg p-4`}>
+          <p className="text-xs font-medium text-gray-500 uppercase">Leads (CRM)</p>
+          <div className="mt-2 flex items-center justify-between">
+            <div>
+              <p className="text-sm text-gray-500">Leads</p>
+              <p className="text-xl font-semibold">{formatNumber(data.leads_crm)}</p>
+            </div>
+            <ArrowRight className="w-5 h-5 text-gray-400" />
+            <div>
+              <p className="text-sm text-gray-500">Vendas</p>
+              <p className="text-xl font-semibold">{formatNumber(data.vendas)}</p>
+            </div>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <p className="text-xs font-medium text-gray-500 uppercase">Valor vendido</p>
+            <p className="text-lg font-semibold text-gray-900">{formatCurrency(data.valor_vendido)}</p>
+          </div>
+          <div>
+            <p className="text-xs font-medium text-gray-500 uppercase">ROI</p>
+            <p className={`text-2xl font-bold ${data.roi > 100 ? 'text-emerald-600' : 'text-gray-900'}`}>{data.roi.toFixed(0)}%</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function PublicRoiClient() {
   const [report, setReport] = useState<PublicReport | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -65,7 +169,7 @@ export default function PublicRoiClient() {
     })();
   }, [token]);
 
-  const title = useMemo(() => 'Relatório Público', []);
+  const title = useMemo(() => 'ROI & Análise de Performance', []);
 
   if (error) {
     return (
@@ -82,53 +186,83 @@ export default function PublicRoiClient() {
   if (!report) {
     return (
       <div className="bg-white rounded-2xl border p-6">
-        <p className="text-gray-600">Carregando…</p>
+        <div className="flex items-center gap-2 text-gray-600">
+          <RefreshCw className="w-4 h-4 animate-spin" />
+          <span>Carregando…</span>
+        </div>
       </div>
     );
   }
 
   return (
     <div className="space-y-6">
-      <div className="bg-white rounded-2xl border p-6">
-        <div className="flex items-start justify-between gap-4">
+      {/* Header (igual ao dashboard local) */}
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-semibold text-gray-900">{title}</h1>
+          <p className="text-gray-500 mt-1">
+            Cruzamento de dados: CRM Real vs Agência • <span className="font-medium">Período apurado: {report.periodo}</span>
+          </p>
+          <p className="text-xs text-gray-400 mt-1">Gerado em {new Date(report.generated_at).toLocaleString('pt-BR')}</p>
+        </div>
+        <div className="px-3 py-2 rounded-xl bg-amber-50 border border-amber-200 text-amber-800 text-xs font-medium">
+          Sem dados sensíveis (CRM/telefones/clientes)
+        </div>
+      </div>
+
+      {/* KPIs (mesma “pegada” do dashboard) */}
+      <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
+        <MetricCard title="Investimento Total" value={formatCurrency(report.roi.investimento_total)} subtitle="Mídia paga" icon={DollarSign} />
+        <MetricCard title="Leads Agência" value={formatNumber(report.roi.leads_agencia)} subtitle="Reportados" icon={Users} />
+        <MetricCard
+          title="Leads CRM"
+          value={formatNumber(report.roi.leads_crm)}
+          subtitle="Entrada real"
+          icon={Users}
+          color={report.roi.leads_crm < report.roi.leads_agencia * 0.8 ? 'warning' : 'default'}
+        />
+        <MetricCard
+          title="Vendas"
+          value={formatNumber(report.roi.vendas_crm)}
+          subtitle={formatCurrency(report.roi.valor_vendido)}
+          icon={Target}
+          color="success"
+        />
+        <MetricCard
+          title="ROI"
+          value={`${report.roi.roi_percentual.toFixed(0)}%`}
+          subtitle="Retorno/Investimento"
+          icon={TrendingUp}
+          color={report.roi.roi_percentual > 200 ? 'success' : report.roi.roi_percentual > 100 ? 'default' : 'danger'}
+        />
+      </div>
+
+      {/* Custos Reais */}
+      <div className="bg-gradient-to-r from-gray-900 to-gray-800 rounded-xl p-6 text-white">
+        <h3 className="text-lg font-medium text-gray-300">Custos Reais (baseado no CRM)</h3>
+        <div className="mt-4 grid grid-cols-3 gap-8">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">{title}</h1>
-            <p className="text-gray-600 mt-1">
-              <strong>Período apurado:</strong> {report.periodo}
-            </p>
-            <p className="text-xs text-gray-400 mt-2">Gerado em {new Date(report.generated_at).toLocaleString('pt-BR')}</p>
+            <p className="text-sm text-gray-400">Custo por Lead (Real)</p>
+            <p className="text-2xl font-semibold text-amber-400">{formatCurrency(report.roi.custo_por_lead_real)}</p>
+            <p className="text-xs text-gray-500">baseado no CRM</p>
           </div>
-          <div className="px-3 py-2 rounded-xl bg-amber-50 border border-amber-200 text-amber-800 text-xs font-medium">
-            Sem dados sensíveis (CRM/telefones/clientes)
+          <div>
+            <p className="text-sm text-gray-400">Custo por Venda</p>
+            <p className="text-2xl font-semibold text-emerald-400">{formatCurrency(report.roi.custo_por_venda)}</p>
+            <p className="text-xs text-gray-500">o que realmente importa</p>
+          </div>
+          <div>
+            <p className="text-sm text-gray-400">Taxa conversão (mídia)</p>
+            <p className="text-2xl font-semibold text-red-300">{report.qualidade.resumo_midia.taxa_conversao.toFixed(1)}%</p>
+            <p className="text-xs text-gray-500">ganhos / leads</p>
           </div>
         </div>
       </div>
 
-      <div className="grid md:grid-cols-4 gap-4">
-        <div className="bg-white rounded-2xl border p-5">
-          <div className="flex items-center gap-2 text-gray-500 text-xs font-semibold uppercase">
-            <DollarSign className="w-4 h-4" /> Investimento
-          </div>
-          <div className="mt-2 text-2xl font-bold text-gray-900">{formatCurrency(report.roi.investimento_total)}</div>
-        </div>
-        <div className="bg-white rounded-2xl border p-5">
-          <div className="flex items-center gap-2 text-gray-500 text-xs font-semibold uppercase">
-            <Users className="w-4 h-4" /> Leads (CRM)
-          </div>
-          <div className="mt-2 text-2xl font-bold text-gray-900">{formatNumber(report.roi.leads_crm)}</div>
-        </div>
-        <div className="bg-white rounded-2xl border p-5">
-          <div className="flex items-center gap-2 text-gray-500 text-xs font-semibold uppercase">
-            <Target className="w-4 h-4" /> Vendas (CRM)
-          </div>
-          <div className="mt-2 text-2xl font-bold text-gray-900">{formatNumber(report.roi.vendas_crm)}</div>
-        </div>
-        <div className="bg-white rounded-2xl border p-5">
-          <div className="flex items-center gap-2 text-gray-500 text-xs font-semibold uppercase">
-            <TrendingUp className="w-4 h-4" /> ROI
-          </div>
-          <div className="mt-2 text-2xl font-bold text-emerald-700">{report.roi.roi_percentual.toFixed(0)}%</div>
-        </div>
+      {/* Comparativo Meta vs Google (sanitizado) */}
+      <div className="grid lg:grid-cols-2 gap-6">
+        <ComparisonCard title="META (Facebook/Instagram)" platform="meta" data={report.roi.meta} />
+        <ComparisonCard title="GOOGLE Ads" platform="google" data={report.roi.google} />
       </div>
 
       <div className="bg-white rounded-2xl border overflow-hidden">
