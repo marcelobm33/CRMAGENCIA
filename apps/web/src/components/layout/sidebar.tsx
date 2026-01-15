@@ -4,18 +4,19 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import {
-  Target,
-  Users,
   TrendingUp,
-  Zap,
-  Settings,
-  BarChart3,
-  Filter,
   PieChart,
   AlertTriangle,
 } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 
-const navigation = [
+type NavItem = {
+  name: string;
+  href: string;
+  icon: LucideIcon;
+};
+
+const navigation: NavItem[] = [
   { name: "ROI & Análise", href: "/dashboard/roi", icon: PieChart },
   { name: "Qualidade Leads", href: "/dashboard/roi/qualidade", icon: AlertTriangle },
   // Ocultos por enquanto (dependem da API principal / integrações ainda em evolução):
@@ -26,7 +27,7 @@ const navigation = [
   // { name: "IA Analista", href: "/dashboard/ai", icon: Zap },
 ];
 
-const secondaryNav = [
+const secondaryNav: NavItem[] = [
   // Oculto por enquanto (está em construção)
   // { name: "Configurações", href: "/dashboard/settings", icon: Settings },
 ];
