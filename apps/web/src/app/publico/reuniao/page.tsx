@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import {
   AlertTriangle,
   ArrowRight,
@@ -22,6 +23,13 @@ import {
   MessageCircle,
   ChevronRight,
   Star,
+  Info,
+  Rocket,
+  Wrench,
+  Bot,
+  RefreshCw,
+  FileSearch,
+  Smartphone,
 } from 'lucide-react';
 
 function formatCurrency(value: number): string {
@@ -30,6 +38,50 @@ function formatCurrency(value: number): string {
     currency: 'BRL',
     maximumFractionDigits: 0,
   }).format(value);
+}
+
+// Componente de Tooltip
+function Tooltip({ 
+  children, 
+  content,
+  formula,
+  source 
+}: { 
+  children: React.ReactNode; 
+  content: string;
+  formula?: string;
+  source?: string;
+}) {
+  const [isVisible, setIsVisible] = useState(false);
+
+  return (
+    <div className="relative inline-block">
+      <div
+        onMouseEnter={() => setIsVisible(true)}
+        onMouseLeave={() => setIsVisible(false)}
+        className="cursor-help"
+      >
+        {children}
+        <Info className="w-3 h-3 text-slate-400 inline-block ml-1 -mt-1" />
+      </div>
+      {isVisible && (
+        <div className="absolute z-50 bottom-full left-1/2 -translate-x-1/2 mb-2 w-72 p-3 bg-slate-900 text-white text-xs rounded-lg shadow-xl">
+          <p className="font-medium mb-1">{content}</p>
+          {formula && (
+            <p className="text-slate-300 font-mono text-[10px] mt-2 p-2 bg-slate-800 rounded">
+              {formula}
+            </p>
+          )}
+          {source && (
+            <p className="text-slate-400 mt-2 pt-2 border-t border-slate-700">
+              📊 Fonte: {source}
+            </p>
+          )}
+          <div className="absolute top-full left-1/2 -translate-x-1/2 border-8 border-transparent border-t-slate-900"></div>
+        </div>
+      )}
+    </div>
+  );
 }
 
 export default function ReuniaoAgenciaPage() {
@@ -78,19 +130,43 @@ export default function ReuniaoAgenciaPage() {
               
               <div className="grid md:grid-cols-4 gap-4 mt-8">
                 <div className="bg-slate-50 rounded-xl p-4">
-                  <p className="text-xs text-slate-500 uppercase font-medium">Investimento Total</p>
+                  <Tooltip 
+                    content="Soma do investimento em Meta Ads e Google Ads (Out/Nov/Dez)"
+                    formula="Meta (R$ 25.585) + Google (R$ 21.693) = R$ 46.598"
+                    source="Relatórios mensais da agência Voren"
+                  >
+                    <p className="text-xs text-slate-500 uppercase font-medium">Investimento Total</p>
+                  </Tooltip>
                   <p className="text-2xl font-bold text-slate-900 mt-1">R$ 46.598</p>
                 </div>
                 <div className="bg-slate-50 rounded-xl p-4">
-                  <p className="text-xs text-slate-500 uppercase font-medium">Leads no CRM</p>
+                  <Tooltip 
+                    content="Total de leads de mídia paga registrados no CRM (WhatsApp, Site, Facebook, Instagram)"
+                    formula="WhatsApp + Site + Facebook + Instagram = 502 leads"
+                    source="CRM Netcar - filtro por origem de mídia paga"
+                  >
+                    <p className="text-xs text-slate-500 uppercase font-medium">Leads no CRM</p>
+                  </Tooltip>
                   <p className="text-2xl font-bold text-slate-900 mt-1">502</p>
                 </div>
                 <div className="bg-slate-50 rounded-xl p-4">
-                  <p className="text-xs text-slate-500 uppercase font-medium">Vendas Atribuídas</p>
+                  <Tooltip 
+                    content="Vendas de leads diretos de mídia paga + 20% das vendas de Showroom, Indicação e Relacionamento (atribuição indireta)"
+                    formula="Vendas diretas (26) + Atribuição indireta (11) = 37 vendas"
+                    source="CRM Netcar - status 'Ganho' + modelo de atribuição"
+                  >
+                    <p className="text-xs text-slate-500 uppercase font-medium">Vendas Atribuídas</p>
+                  </Tooltip>
                   <p className="text-2xl font-bold text-slate-900 mt-1">37</p>
                 </div>
                 <div className="bg-slate-50 rounded-xl p-4">
-                  <p className="text-xs text-slate-500 uppercase font-medium">Faturamento</p>
+                  <Tooltip 
+                    content="Valor total das 37 vendas atribuídas à mídia paga"
+                    formula="Soma dos valores de venda das 37 unidades"
+                    source="CRM Netcar - campo 'valor_venda' dos negócios ganhos"
+                  >
+                    <p className="text-xs text-slate-500 uppercase font-medium">Faturamento</p>
+                  </Tooltip>
                   <p className="text-2xl font-bold text-slate-900 mt-1">R$ 3,4M</p>
                 </div>
               </div>
@@ -123,11 +199,23 @@ export default function ReuniaoAgenciaPage() {
               <div className="p-6">
                 <div className="flex items-center gap-4 mb-6">
                   <div className="flex-1">
-                    <p className="text-sm text-slate-500">ROI</p>
+                    <Tooltip 
+                      content="Retorno sobre investimento: quanto faturamos para cada R$ 1 investido"
+                      formula="(Faturamento / Investimento) × 100 = (R$ 1.970.100 / R$ 20.693) × 100"
+                      source="CRM (vendas) + Relatório agência (investimento)"
+                    >
+                      <p className="text-sm text-slate-500">ROI</p>
+                    </Tooltip>
                     <p className="text-3xl font-bold text-emerald-600">9.521%</p>
                   </div>
                   <div className="flex-1">
-                    <p className="text-sm text-slate-500">Conversão</p>
+                    <Tooltip 
+                      content="Taxa de conversão: percentual de leads que viraram venda"
+                      formula="(Vendas / Leads) × 100 = (20 / 273) × 100 = 7,3%"
+                      source="CRM Netcar - leads e vendas de origem Google/Site"
+                    >
+                      <p className="text-sm text-slate-500">Conversão</p>
+                    </Tooltip>
                     <p className="text-3xl font-bold text-emerald-600">7,3%</p>
                   </div>
                 </div>
@@ -142,15 +230,33 @@ export default function ReuniaoAgenciaPage() {
 
                 <div className="mt-4 space-y-2">
                   <div className="flex items-center justify-between text-sm">
-                    <span className="text-slate-600">Investimento</span>
+                    <Tooltip 
+                      content="Investimento em campanhas de LEAD do Google Ads (Pesquisa + PMax)"
+                      formula="R$ 20.693 (apenas campanhas de geração de lead)"
+                      source="Relatório mensal Voren - Google Ads"
+                    >
+                      <span className="text-slate-600">Investimento</span>
+                    </Tooltip>
                     <span className="font-medium text-slate-900">R$ 20.693</span>
                   </div>
                   <div className="flex items-center justify-between text-sm">
-                    <span className="text-slate-600">Vendas geradas</span>
+                    <Tooltip 
+                      content="Vendas de leads que vieram do Google (Site + WhatsApp via Google)"
+                      formula="19 (Site) + 1 (WhatsApp Google) = 20 vendas"
+                      source="CRM Netcar - origem Google/Site"
+                    >
+                      <span className="text-slate-600">Vendas geradas</span>
+                    </Tooltip>
                     <span className="font-medium text-slate-900">20 unidades</span>
                   </div>
                   <div className="flex items-center justify-between text-sm">
-                    <span className="text-slate-600">Custo por venda</span>
+                    <Tooltip 
+                      content="Custo por Venda: quanto gastamos em média para cada venda"
+                      formula="Investimento / Vendas = R$ 20.693 / 20 = R$ 1.035"
+                      source="Cálculo: investimento Google / vendas Google"
+                    >
+                      <span className="text-slate-600">Custo por venda</span>
+                    </Tooltip>
                     <span className="font-medium text-emerald-600">R$ 1.035</span>
                   </div>
                 </div>
@@ -169,11 +275,23 @@ export default function ReuniaoAgenciaPage() {
               <div className="p-6">
                 <div className="flex items-center gap-4 mb-6">
                   <div className="flex-1">
-                    <p className="text-sm text-slate-500">Leads</p>
+                    <Tooltip 
+                      content="Leads que entraram no CRM com origem 'Site' (formulário ou WhatsApp via site)"
+                      formula="Total de leads com origem_lead = 'Site'"
+                      source="CRM Netcar - campo origem_lead"
+                    >
+                      <p className="text-sm text-slate-500">Leads</p>
+                    </Tooltip>
                     <p className="text-3xl font-bold text-blue-600">207</p>
                   </div>
                   <div className="flex-1">
-                    <p className="text-sm text-slate-500">Conversão</p>
+                    <Tooltip 
+                      content="Taxa de conversão específica dos leads que vieram pelo site"
+                      formula="(Vendas Site / Leads Site) × 100 = (19 / 207) × 100 = 9,2%"
+                      source="CRM Netcar - leads e vendas com origem 'Site'"
+                    >
+                      <p className="text-sm text-slate-500">Conversão</p>
+                    </Tooltip>
                     <p className="text-3xl font-bold text-blue-600">9,2%</p>
                   </div>
                 </div>
@@ -188,11 +306,23 @@ export default function ReuniaoAgenciaPage() {
 
                 <div className="mt-4 space-y-2">
                   <div className="flex items-center justify-between text-sm">
-                    <span className="text-slate-600">Vendas geradas</span>
+                    <Tooltip 
+                      content="Vendas fechadas de leads que vieram pelo site"
+                      formula="Leads Site com status = 'Ganho'"
+                      source="CRM Netcar - negócios ganhos com origem 'Site'"
+                    >
+                      <span className="text-slate-600">Vendas geradas</span>
+                    </Tooltip>
                     <span className="font-medium text-slate-900">19 unidades</span>
                   </div>
                   <div className="flex items-center justify-between text-sm">
-                    <span className="text-slate-600">% do total de vendas</span>
+                    <Tooltip 
+                      content="Participação do Site no total de vendas de mídia paga"
+                      formula="(Vendas Site / Vendas Mídia Paga) × 100 = (19 / 26) × 100 ≈ 73%"
+                      source="Cálculo: vendas site vs total vendas diretas de mídia"
+                    >
+                      <span className="text-slate-600">% do total de vendas</span>
+                    </Tooltip>
                     <span className="font-medium text-blue-600">73% das vendas de mídia</span>
                   </div>
                 </div>
@@ -242,17 +372,35 @@ export default function ReuniaoAgenciaPage() {
               <div className="p-6">
                 <div className="grid md:grid-cols-3 gap-6 mb-6">
                   <div className="text-center p-4 bg-red-50 rounded-xl">
-                    <p className="text-sm text-red-600 font-medium">Conversão</p>
+                    <Tooltip 
+                      content="Taxa de conversão de leads Meta Ads para vendas"
+                      formula="(Vendas / Leads) × 100 = (6 / 238) × 100 = 2,5%"
+                      source="CRM Netcar - leads de Facebook, Instagram e WhatsApp via Meta"
+                    >
+                      <p className="text-sm text-red-600 font-medium">Conversão</p>
+                    </Tooltip>
                     <p className="text-3xl font-bold text-red-700">2,5%</p>
                     <p className="text-xs text-red-500 mt-1">vs 7,3% do Google</p>
                   </div>
                   <div className="text-center p-4 bg-red-50 rounded-xl">
-                    <p className="text-sm text-red-600 font-medium">Custo por Venda</p>
+                    <Tooltip 
+                      content="Custo por Venda no Meta Ads (quanto gastamos para cada venda)"
+                      formula="Investimento Lead Meta / Vendas Meta = R$ 20.238 / 6 = R$ 3.373"
+                      source="Relatório agência (investimento) + CRM (vendas)"
+                    >
+                      <p className="text-sm text-red-600 font-medium">Custo por Venda</p>
+                    </Tooltip>
                     <p className="text-3xl font-bold text-red-700">R$ 3.373</p>
                     <p className="text-xs text-red-500 mt-1">3x mais caro que Google</p>
                   </div>
                   <div className="text-center p-4 bg-red-50 rounded-xl">
-                    <p className="text-sm text-red-600 font-medium">Vendas</p>
+                    <Tooltip 
+                      content="Total de vendas geradas por leads do Meta Ads"
+                      formula="Leads Meta com status = 'Ganho'"
+                      source="CRM Netcar - negócios ganhos com origem Facebook/Instagram/WhatsApp"
+                    >
+                      <p className="text-sm text-red-600 font-medium">Vendas</p>
+                    </Tooltip>
                     <p className="text-3xl font-bold text-red-700">6</p>
                     <p className="text-xs text-red-500 mt-1">vs 20 do Google</p>
                   </div>
@@ -302,9 +450,15 @@ export default function ReuniaoAgenciaPage() {
                 <div className="grid md:grid-cols-2 gap-6 mb-6">
                   <div className="p-5 bg-blue-50 rounded-xl border border-blue-100">
                     <div className="flex items-center gap-3 mb-3">
-                      <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
-                        <span className="text-xl font-bold text-blue-700">57%</span>
-                      </div>
+                      <Tooltip 
+                        content="Percentual de leads perdidos por falta de interesse ou não resposta"
+                        formula="(Sem Interesse + Não Responde) / Total Perdidos = (105 + 98) / 353 ≈ 57%"
+                        source="CRM Netcar - campo motivo_perda dos negócios perdidos"
+                      >
+                        <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
+                          <span className="text-xl font-bold text-blue-700">57%</span>
+                        </div>
+                      </Tooltip>
                       <div>
                         <p className="font-semibold text-blue-900">Leads Frios</p>
                         <p className="text-sm text-blue-600">dos leads são perdidos por "Sem Interesse" ou "Não Responde"</p>
@@ -312,7 +466,13 @@ export default function ReuniaoAgenciaPage() {
                     </div>
                   </div>
                   <div className="p-5 bg-slate-50 rounded-xl border border-slate-200">
-                    <p className="font-semibold text-slate-900 mb-2">Principais motivos de perda:</p>
+                    <Tooltip 
+                      content="Ranking dos motivos mais frequentes de perda de negócio"
+                      formula="Contagem por motivo / Total de perdidos × 100"
+                      source="CRM Netcar - tabela de motivos de perda"
+                    >
+                      <p className="font-semibold text-slate-900 mb-2">Principais motivos de perda:</p>
+                    </Tooltip>
                     <ul className="space-y-2">
                       <li className="flex items-center justify-between text-sm">
                         <span className="text-slate-600">Sem Interesse</span>
@@ -442,11 +602,23 @@ export default function ReuniaoAgenciaPage() {
                   </p>
                   <div className="grid md:grid-cols-2 gap-4">
                     <div className="p-4 bg-slate-50 rounded-xl">
-                      <p className="text-sm text-slate-500 mb-1">CPV atual (com atribuição)</p>
+                      <Tooltip 
+                        content="Custo por Venda real calculado com base no investimento em LEAD"
+                        formula="Investimento Lead / Vendas = R$ 40.931 / 37 = R$ 1.106"
+                        source="Relatório agência (verba lead) + CRM (vendas atribuídas)"
+                      >
+                        <p className="text-sm text-slate-500 mb-1">CPV atual (com atribuição)</p>
+                      </Tooltip>
                       <p className="text-2xl font-bold text-slate-900">R$ 1.106</p>
                     </div>
                     <div className="p-4 bg-emerald-50 rounded-xl border border-emerald-100">
-                      <p className="text-sm text-emerald-600 mb-1">Meta sugerida</p>
+                      <Tooltip 
+                        content="Meta de CPV sugerida para manter rentabilidade saudável"
+                        formula="Considerando ticket médio ~R$ 94k e margem operacional"
+                        source="Análise de rentabilidade do setor automotivo"
+                      >
+                        <p className="text-sm text-emerald-600 mb-1">Meta sugerida</p>
+                      </Tooltip>
                       <p className="text-2xl font-bold text-emerald-700">&lt; R$ 1.500</p>
                     </div>
                   </div>
@@ -493,6 +665,210 @@ export default function ReuniaoAgenciaPage() {
                 </p>
                 <p className="text-slate-400 mt-2">
                   Google 60% | Meta 25% | Branding 15%
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Próximos Passos - Otimização Avançada */}
+        <section>
+          <div className="flex items-center gap-3 mb-6">
+            <div className="w-10 h-10 bg-purple-100 rounded-xl flex items-center justify-center">
+              <Rocket className="w-5 h-5 text-purple-600" />
+            </div>
+            <div>
+              <h2 className="text-2xl font-bold text-slate-900">Próximos Passos</h2>
+              <p className="text-slate-500">Otimizações avançadas para implementar com a agência</p>
+            </div>
+          </div>
+
+          <div className="bg-white rounded-2xl border shadow-sm overflow-hidden">
+            <div className="p-6 space-y-6">
+              
+              {/* Métricas Faltantes */}
+              <div className="pb-6 border-b">
+                <div className="flex items-center gap-3 mb-4">
+                  <FileSearch className="w-5 h-5 text-purple-600" />
+                  <h3 className="text-lg font-semibold text-slate-900">Métricas que Precisamos Acompanhar</h3>
+                </div>
+                <p className="text-slate-600 mb-4">
+                  Para ter uma visão completa do funil, precisamos cobrar da agência as seguintes métricas que estão faltando:
+                </p>
+                <div className="grid md:grid-cols-2 gap-4">
+                  <div className="p-4 bg-purple-50 rounded-xl border border-purple-100">
+                    <Tooltip 
+                      content="Percentual de pessoas que clicam no anúncio após vê-lo"
+                      formula="(Cliques / Impressões) × 100"
+                      source="Meta Ads / Google Ads - relatório de campanha"
+                    >
+                      <p className="font-medium text-purple-900 mb-1">CTR (Click-Through Rate)</p>
+                    </Tooltip>
+                    <p className="text-sm text-purple-700">Criativo atrativo? Público certo?</p>
+                  </div>
+                  <div className="p-4 bg-purple-50 rounded-xl border border-purple-100">
+                    <Tooltip 
+                      content="Quantas vezes em média o mesmo usuário viu o anúncio"
+                      formula="Impressões / Alcance"
+                      source="Meta Ads / Google Ads - relatório de frequência"
+                    >
+                      <p className="font-medium text-purple-900 mb-1">Frequência</p>
+                    </Tooltip>
+                    <p className="text-sm text-purple-700">Acima de 3x indica saturação</p>
+                  </div>
+                  <div className="p-4 bg-purple-50 rounded-xl border border-purple-100">
+                    <Tooltip 
+                      content="Tempo entre chegada do lead e primeira resposta do vendedor"
+                      formula="Hora primeira mensagem - Hora entrada lead"
+                      source="CRM - histórico de atividades"
+                    >
+                      <p className="font-medium text-purple-900 mb-1">Tempo de Resposta (SLA)</p>
+                    </Tooltip>
+                    <p className="text-sm text-purple-700">Responder em 5min aumenta conversão 9x</p>
+                  </div>
+                  <div className="p-4 bg-purple-50 rounded-xl border border-purple-100">
+                    <Tooltip 
+                      content="Qual anúncio específico gera mais vendas, não só cliques"
+                      formula="Vendas por criativo / Custo por criativo"
+                      source="UTMs + CRM cruzado com relatório da agência"
+                    >
+                      <p className="font-medium text-purple-900 mb-1">Performance por Criativo</p>
+                    </Tooltip>
+                    <p className="text-sm text-purple-700">Qual anúncio converte mais?</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Implementações Técnicas */}
+              <div className="pb-6 border-b">
+                <div className="flex items-center gap-3 mb-4">
+                  <Wrench className="w-5 h-5 text-blue-600" />
+                  <h3 className="text-lg font-semibold text-slate-900">Implementações Técnicas</h3>
+                </div>
+                <div className="space-y-4">
+                  <div className="flex items-start gap-4 p-4 bg-blue-50 rounded-xl border border-blue-100">
+                    <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center shrink-0">
+                      <RefreshCw className="w-5 h-5 text-blue-600" />
+                    </div>
+                    <div>
+                      <h4 className="font-semibold text-blue-900">API de Conversões Offline</h4>
+                      <p className="text-sm text-blue-700 mt-1">
+                        Integrar vendas do CRM de volta para Meta e Google. O algoritmo passa a otimizar para quem <strong>compra</strong>, não só quem clica.
+                        Isso pode reduzir o CPV em até 30%.
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-4 p-4 bg-emerald-50 rounded-xl border border-emerald-100">
+                    <div className="w-10 h-10 bg-emerald-100 rounded-lg flex items-center justify-center shrink-0">
+                      <Users className="w-5 h-5 text-emerald-600" />
+                    </div>
+                    <div>
+                      <h4 className="font-semibold text-emerald-900">Lookalike de Compradores</h4>
+                      <p className="text-sm text-emerald-700 mt-1">
+                        Criar público similar baseado em quem <strong>já comprou</strong>, não em quem só clicou.
+                        Meta e Google podem encontrar pessoas parecidas com seus melhores clientes.
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-4 p-4 bg-amber-50 rounded-xl border border-amber-100">
+                    <div className="w-10 h-10 bg-amber-100 rounded-lg flex items-center justify-center shrink-0">
+                      <Bot className="w-5 h-5 text-amber-600" />
+                    </div>
+                    <div>
+                      <h4 className="font-semibold text-amber-900">Qualificação Automatizada</h4>
+                      <p className="text-sm text-amber-700 mt-1">
+                        Chatbot no WhatsApp perguntando: "Qual seu orçamento?", "Tem entrada?", "Precisa financiar?".
+                        Só passa para o vendedor quem responde corretamente, filtrando curiosos.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Remarketing */}
+              <div className="pb-6 border-b">
+                <div className="flex items-center gap-3 mb-4">
+                  <Target className="w-5 h-5 text-indigo-600" />
+                  <h3 className="text-lg font-semibold text-slate-900">Estrutura de Remarketing</h3>
+                </div>
+                <p className="text-slate-600 mb-4">
+                  Criar sequência de anúncios para pessoas que já interagiram mas não converteram:
+                </p>
+                <div className="overflow-x-auto">
+                  <table className="w-full text-sm">
+                    <thead>
+                      <tr className="bg-slate-50">
+                        <th className="text-left p-3 font-medium text-slate-700">Público</th>
+                        <th className="text-left p-3 font-medium text-slate-700">Anúncio</th>
+                        <th className="text-left p-3 font-medium text-slate-700">Objetivo</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y">
+                      <tr>
+                        <td className="p-3 text-slate-600">Visitou site, não mandou mensagem</td>
+                        <td className="p-3 text-slate-900">Vídeo do veículo específico</td>
+                        <td className="p-3 text-indigo-600">Reengajar</td>
+                      </tr>
+                      <tr>
+                        <td className="p-3 text-slate-600">Mandou mensagem, não agendou</td>
+                        <td className="p-3 text-slate-900">"Agende sua visita hoje"</td>
+                        <td className="p-3 text-indigo-600">Converter</td>
+                      </tr>
+                      <tr>
+                        <td className="p-3 text-slate-600">Visitou loja, não comprou</td>
+                        <td className="p-3 text-slate-900">Oferta especial personalizada</td>
+                        <td className="p-3 text-indigo-600">Fechar</td>
+                      </tr>
+                      <tr>
+                        <td className="p-3 text-slate-600">Comprou há 2+ anos</td>
+                        <td className="p-3 text-slate-900">"Hora de trocar seu carro?"</td>
+                        <td className="p-3 text-indigo-600">Recompra</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              {/* Perguntas para a Agência */}
+              <div>
+                <div className="flex items-center gap-3 mb-4">
+                  <MessageCircle className="w-5 h-5 text-rose-600" />
+                  <h3 className="text-lg font-semibold text-slate-900">Perguntas para Fazer na Reunião</h3>
+                </div>
+                <div className="space-y-3">
+                  {[
+                    "Qual o CTR médio das campanhas? Está acima de 1%?",
+                    "Qual a frequência dos anúncios? Estão saturando o público?",
+                    "Vocês já usam API de Conversões Offline?",
+                    "Qual criativo específico gera mais VENDAS, não só cliques?",
+                    "O lookalike é baseado em compradores ou só em leads?",
+                    "Temos remarketing estruturado por etapa do funil?",
+                  ].map((pergunta, i) => (
+                    <div key={i} className="flex items-center gap-3 p-3 bg-rose-50 rounded-lg border border-rose-100">
+                      <span className="w-6 h-6 bg-rose-200 text-rose-700 rounded-full flex items-center justify-center text-xs font-bold shrink-0">
+                        {i + 1}
+                      </span>
+                      <p className="text-sm text-rose-800">{pergunta}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Observação Final */}
+          <div className="mt-6 bg-gradient-to-r from-indigo-50 to-purple-50 rounded-2xl p-6 border border-indigo-100">
+            <div className="flex items-start gap-4">
+              <Lightbulb className="w-6 h-6 text-indigo-600 shrink-0 mt-1" />
+              <div>
+                <h4 className="font-semibold text-indigo-900">Observação Final</h4>
+                <p className="text-indigo-800 mt-2">
+                  As otimizações técnicas acima podem representar uma <strong>redução de 20-40% no CPV</strong> quando bem implementadas.
+                  A integração de conversões offline é especialmente crítica: sem ela, Meta e Google otimizam para cliques, não para vendas reais.
+                </p>
+                <p className="text-indigo-800 mt-3">
+                  <strong>Recomendação:</strong> Solicitar à agência um cronograma de implementação dessas melhorias nos próximos 30-60 dias,
+                  com checkpoints semanais para acompanhamento.
                 </p>
               </div>
             </div>
