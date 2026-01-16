@@ -680,6 +680,272 @@ export default function ReuniaoAgenciaPage() {
           </div>
         </section>
 
+        {/* Direcionamento Estratégico 2026 */}
+        <section>
+          <div className="flex items-center gap-3 mb-6">
+            <div className="w-10 h-10 bg-gradient-to-br from-orange-500 to-red-500 rounded-xl flex items-center justify-center">
+              <Flame className="w-5 h-5 text-white" />
+            </div>
+            <div>
+              <h2 className="text-2xl font-bold text-slate-900">Direcionamento Estratégico 2026</h2>
+              <p className="text-slate-500">Modelo de 3 pistas para tratamento de leads</p>
+            </div>
+          </div>
+
+          <div className="bg-white rounded-2xl border shadow-sm overflow-hidden">
+            <div className="p-6 space-y-6">
+              
+              {/* Princípio Base */}
+              <div className="bg-gradient-to-r from-slate-900 to-slate-800 text-white rounded-xl p-6">
+                <p className="text-lg font-medium mb-2">🎯 Princípio-Base</p>
+                <p className="text-slate-300 mb-4">
+                  O problema <strong className="text-white">não é falta de lead</strong> — é falta de progressão do lead dentro do funil.
+                </p>
+                <div className="bg-white/10 rounded-lg p-4 border border-white/20">
+                  <p className="text-amber-300 font-medium">
+                    "A gente não quer menos lead. A gente quer lead andando mais dentro do funil."
+                  </p>
+                </div>
+              </div>
+
+              {/* Nova Leitura de Orçamento */}
+              <div className="pb-6 border-b">
+                <h3 className="text-lg font-semibold text-slate-900 mb-4">📊 Nova Leitura de Orçamento</h3>
+                <p className="text-slate-600 mb-4">
+                  Em vez de pensar só em "canal", pensar em <strong>momento do cliente</strong>:
+                </p>
+                <div className="overflow-x-auto">
+                  <table className="w-full text-sm">
+                    <thead>
+                      <tr className="bg-slate-100">
+                        <th className="text-left p-3 font-semibold text-slate-700 rounded-tl-lg">Momento</th>
+                        <th className="text-left p-3 font-semibold text-slate-700">Canal</th>
+                        <th className="text-left p-3 font-semibold text-slate-700 rounded-tr-lg">Função da Campanha</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y">
+                      <tr className="bg-emerald-50">
+                        <td className="p-3">
+                          <Tooltip
+                            content="Cliente já decidiu comprar, está comparando opções"
+                            source="Comportamento: pesquisa 'comprar carro usado [cidade]'"
+                          >
+                            <span className="flex items-center gap-2">
+                              <span className="w-3 h-3 bg-emerald-500 rounded-full"></span>
+                              <strong className="text-emerald-800">Alta intenção</strong>
+                            </span>
+                          </Tooltip>
+                        </td>
+                        <td className="p-3 text-slate-700">Google Search / Site</td>
+                        <td className="p-3 text-emerald-700 font-medium">🎯 Fechamento direto</td>
+                      </tr>
+                      <tr className="bg-amber-50">
+                        <td className="p-3">
+                          <Tooltip
+                            content="Cliente interessado mas ainda não decidiu, quer ver opções"
+                            source="Comportamento: clica em anúncio de carro, pede info"
+                          >
+                            <span className="flex items-center gap-2">
+                              <span className="w-3 h-3 bg-amber-500 rounded-full"></span>
+                              <strong className="text-amber-800">Média intenção</strong>
+                            </span>
+                          </Tooltip>
+                        </td>
+                        <td className="p-3 text-slate-700">Meta WhatsApp</td>
+                        <td className="p-3 text-amber-700 font-medium">🔥 Aquecimento + avanço</td>
+                      </tr>
+                      <tr className="bg-blue-50">
+                        <td className="p-3">
+                          <Tooltip
+                            content="Cliente curioso, só pesquisando, sem urgência"
+                            source="Comportamento: vê post, não responde perguntas-chave"
+                          >
+                            <span className="flex items-center gap-2">
+                              <span className="w-3 h-3 bg-blue-500 rounded-full"></span>
+                              <strong className="text-blue-800">Baixa intenção</strong>
+                            </span>
+                          </Tooltip>
+                        </td>
+                        <td className="p-3 text-slate-700">Meta Branding / Instagram</td>
+                        <td className="p-3 text-blue-700 font-medium">💭 Construção de desejo</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              {/* Modelo de 3 Pistas */}
+              <div className="pb-6 border-b">
+                <h3 className="text-lg font-semibold text-slate-900 mb-4">🔥 Modelo de 3 Pistas</h3>
+                <p className="text-slate-600 mb-4">
+                  Cada lead recebe tratamento diferente conforme sua temperatura:
+                </p>
+                <div className="grid md:grid-cols-3 gap-4">
+                  {/* Pista 1 - Quente */}
+                  <div className="bg-emerald-50 border-2 border-emerald-200 rounded-xl p-5">
+                    <div className="flex items-center gap-2 mb-3">
+                      <span className="w-4 h-4 bg-emerald-500 rounded-full"></span>
+                      <h4 className="font-bold text-emerald-800">PISTA 1 — Quente</h4>
+                    </div>
+                    <p className="text-sm text-emerald-700 mb-3">Google Search / Site</p>
+                    <ul className="text-xs text-emerald-600 space-y-1">
+                      <li>• Vai direto para fechamento</li>
+                      <li>• Script curto e objetivo</li>
+                      <li>• Vendedor com melhor taxa</li>
+                    </ul>
+                    <div className="mt-4 pt-3 border-t border-emerald-200">
+                      <p className="text-xs font-medium text-emerald-800">Meta: <span className="text-emerald-600">fechar rápido</span></p>
+                    </div>
+                  </div>
+
+                  {/* Pista 2 - Morno */}
+                  <div className="bg-amber-50 border-2 border-amber-200 rounded-xl p-5">
+                    <div className="flex items-center gap-2 mb-3">
+                      <span className="w-4 h-4 bg-amber-500 rounded-full"></span>
+                      <h4 className="font-bold text-amber-800">PISTA 2 — Morno</h4>
+                    </div>
+                    <p className="text-sm text-amber-700 mb-3">Meta WhatsApp</p>
+                    <ul className="text-xs text-amber-600 space-y-1">
+                      <li>• Script de descoberta</li>
+                      <li>• Apresentar opções</li>
+                      <li>• Test drive, simulação</li>
+                    </ul>
+                    <div className="mt-4 pt-3 border-t border-amber-200">
+                      <p className="text-xs font-medium text-amber-800">Meta: <span className="text-amber-600">aquecer + avançar</span></p>
+                    </div>
+                    <div className="mt-2 bg-amber-100 rounded-lg p-2">
+                      <p className="text-[10px] text-amber-700">⚡ Aqui está onde se ganha volume</p>
+                    </div>
+                  </div>
+
+                  {/* Pista 3 - Frio */}
+                  <div className="bg-blue-50 border-2 border-blue-200 rounded-xl p-5">
+                    <div className="flex items-center gap-2 mb-3">
+                      <span className="w-4 h-4 bg-blue-500 rounded-full"></span>
+                      <h4 className="font-bold text-blue-800">PISTA 3 — Frio</h4>
+                    </div>
+                    <p className="text-sm text-blue-700 mb-3">Branding / Instagram</p>
+                    <ul className="text-xs text-blue-600 space-y-1">
+                      <li>• NÃO passa direto pro vendedor</li>
+                      <li>• Resposta automática (IA)</li>
+                      <li>• Pergunta de intenção</li>
+                    </ul>
+                    <div className="mt-4 pt-3 border-t border-blue-200">
+                      <p className="text-xs font-medium text-blue-800">Meta: <span className="text-blue-600">preparar, não vender</span></p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Regra de Ouro */}
+              <div className="pb-6 border-b">
+                <div className="bg-gradient-to-r from-rose-50 to-orange-50 border border-rose-200 rounded-xl p-5">
+                  <div className="flex items-center gap-3 mb-3">
+                    <span className="text-2xl">📌</span>
+                    <h4 className="font-bold text-rose-800 text-lg">Regra de Ouro</h4>
+                  </div>
+                  <p className="text-rose-700 font-medium mb-3">
+                    "Vendedor só recebe lead quando existe ação possível. IA cuida do resto."
+                  </p>
+                  <div className="grid md:grid-cols-3 gap-3 text-sm">
+                    <div className="flex items-center gap-2">
+                      <CheckCircle2 className="w-4 h-4 text-emerald-500" />
+                      <span className="text-slate-600">Protege conversão</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <CheckCircle2 className="w-4 h-4 text-emerald-500" />
+                      <span className="text-slate-600">Protege moral do time</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <CheckCircle2 className="w-4 h-4 text-emerald-500" />
+                      <span className="text-slate-600">Melhora CPV real</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Briefing para Criativos */}
+              <div className="pb-6 border-b">
+                <h3 className="text-lg font-semibold text-slate-900 mb-4">🎨 Briefing para Criativos</h3>
+                <p className="text-slate-600 mb-4">
+                  O branding deve funcionar como <strong>pré-venda silenciosa</strong>, não isolado do comercial:
+                </p>
+                <div className="grid md:grid-cols-2 gap-4">
+                  <div className="bg-slate-50 rounded-xl p-4 border">
+                    <p className="font-medium text-slate-900 mb-2">🔹 Conteúdo com Filtro Embutido</p>
+                    <ul className="text-sm text-slate-600 space-y-2">
+                      <li>"Quem compra carro assim é quem..."</li>
+                      <li>"Esse carro não é pra quem..."</li>
+                      <li>"Esse perfil de cliente normalmente procura..."</li>
+                    </ul>
+                    <p className="text-xs text-slate-500 mt-3 pt-3 border-t">
+                      👉 Afasta curioso e atrai comprador real
+                    </p>
+                  </div>
+                  <div className="bg-slate-50 rounded-xl p-4 border">
+                    <p className="font-medium text-slate-900 mb-2">🔹 Reforço de Autoridade</p>
+                    <ul className="text-sm text-slate-600 space-y-2">
+                      <li>Pós-venda e garantia</li>
+                      <li>Bastidores da loja</li>
+                      <li>Processos de qualidade</li>
+                      <li>Transparência</li>
+                    </ul>
+                    <p className="text-xs text-slate-500 mt-3 pt-3 border-t">
+                      👉 Lead chega menos defensivo
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Resultado Esperado */}
+              <div>
+                <h3 className="text-lg font-semibold text-slate-900 mb-4">📈 Resultado Esperado (Realista)</h3>
+                <p className="text-slate-600 mb-4">
+                  Com esse modelo, <strong>sem aumentar mídia</strong>:
+                </p>
+                <div className="overflow-x-auto">
+                  <table className="w-full text-sm">
+                    <thead>
+                      <tr className="bg-emerald-100">
+                        <th className="text-left p-3 font-semibold text-emerald-800 rounded-tl-lg">Ação</th>
+                        <th className="text-right p-3 font-semibold text-emerald-800 rounded-tr-lg">Impacto Estimado</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y">
+                      <tr>
+                        <td className="p-3 text-slate-700">Melhor progressão do lead (pistas)</td>
+                        <td className="p-3 text-right text-emerald-600 font-medium">+2 a +3 vendas/mês</td>
+                      </tr>
+                      <tr>
+                        <td className="p-3 text-slate-700">Melhor uso do Meta (qualificação)</td>
+                        <td className="p-3 text-right text-emerald-600 font-medium">+2 vendas/mês</td>
+                      </tr>
+                      <tr>
+                        <td className="p-3 text-slate-700">Menos desgaste do vendedor</td>
+                        <td className="p-3 text-right text-emerald-600 font-medium">+1 venda/mês</td>
+                      </tr>
+                      <tr>
+                        <td className="p-3 text-slate-700">Branding mais filtrador</td>
+                        <td className="p-3 text-right text-emerald-600 font-medium">+1 venda/mês</td>
+                      </tr>
+                      <tr className="bg-emerald-50">
+                        <td className="p-3 font-bold text-slate-900">Total Realista</td>
+                        <td className="p-3 text-right font-bold text-emerald-700">+6 a +8 vendas/mês</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+                <div className="mt-4 bg-amber-50 border border-amber-200 rounded-lg p-4">
+                  <p className="text-sm text-amber-800">
+                    👆 Isso é <strong>crescimento real</strong>, não PowerPoint. Meta inicial: +4 vendas/mês, revisar em 60 dias.
+                  </p>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </section>
+
         {/* Próximos Passos - Otimização Avançada */}
         <section>
           <div className="flex items-center gap-3 mb-6">
