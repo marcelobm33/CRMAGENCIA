@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-01-16T14:00:00.000000+00:00",
+  "generated_at": "2026-01-16T15:00:00.000000+00:00",
   "periodo": "01/10/2025 a 31/12/2025",
-  "nota": "Análise Out-Nov-Dez 2025. SITE considerado como Google Ads. Separação LEAD vs BRANDING.",
+  "nota": "Análise Out-Nov-Dez 2025. SITE = Google Ads. Atribuição indireta: 20% de Showroom/Indicação/Rede.",
   "investimento": {
     "total": 46598,
     "lead": 40931,
@@ -37,12 +37,29 @@
       "taxa_conversao": 21.1
     }
   },
+  "atribuicao_indireta": {
+    "percentual": 20,
+    "fontes": ["SHOWROOM", "INDICACAO", "REDE RELACIONAMENTO"],
+    "detalhes": {
+      "showroom": { "vendas_total": 25, "atribuido": 5.0, "valor": 460600 },
+      "indicacao": { "vendas_total": 17, "atribuido": 3.4, "valor": 266720 },
+      "rede_relacionamento": { "vendas_total": 13, "atribuido": 2.6, "valor": 186800 }
+    },
+    "total_vendas_atribuidas": 11.0,
+    "total_valor_atribuido": 914120
+  },
   "roi": {
     "investimento_lead": 40931,
-    "vendas_midia": 26,
-    "valor_vendido": 2572500,
-    "cpv_total": 1574,
-    "roi_percentual": 6285,
+    "vendas_diretas": 26,
+    "vendas_atribuidas": 11,
+    "vendas_totais": 37,
+    "valor_direto": 2572500,
+    "valor_atribuido": 914120,
+    "valor_total": 3486620,
+    "cpv_direto": 1574,
+    "cpv_com_atribuicao": 1106,
+    "roi_direto": 6285,
+    "roi_com_atribuicao": 8518,
     "google": {
       "investimento_lead": 20693,
       "leads_crm": 273,
@@ -64,13 +81,13 @@
   },
   "auditoria": {
     "cpv_proposto": 400,
-    "cpv_real": 1574,
-    "diferenca_cpv": "4x maior que o proposto",
-    "validacao": "CPV de R$ 400 só existe se atribuir TODAS as vendas do CRM à mídia paga (incorreto)",
-    "gap_leads": {
-      "agencia_reporta_mes": 380,
-      "crm_recebe_mes": 167,
-      "diferenca_percentual": 56
+    "cpv_real_direto": 1574,
+    "cpv_real_com_atribuicao": 1106,
+    "diferenca_cpv": "2.8x maior que o proposto (com atribuição)",
+    "validacao": "CPV de R$ 400 só existe se atribuir 100% das vendas do CRM à mídia. Com 20% de atribuição indireta, CPV = R$ 1.106",
+    "melhoria_com_atribuicao": {
+      "reducao_cpv": "30%",
+      "aumento_roi": "+2.233%"
     },
     "eficiencia_comparativa": {
       "google_vs_meta_cpv": "Google é 3.3x mais barato",
@@ -92,11 +109,12 @@
       "melhor_fonte": true
     },
     "comparativo_outras_fontes": {
-      "showroom": { "leads": 77, "vendas": 33, "taxa": 42.9 },
+      "showroom": { "leads": 77, "vendas": 25, "taxa": 32.5, "atribuido_20pct": 5.0 },
       "oferta_vendedor": { "leads": 55, "vendas": 31, "taxa": 56.4 },
-      "indicacao": { "leads": 32, "vendas": 17, "taxa": 53.1 }
+      "indicacao": { "leads": 32, "vendas": 17, "taxa": 53.1, "atribuido_20pct": 3.4 },
+      "rede_relacionamento": { "leads": 19, "vendas": 13, "taxa": 68.4, "atribuido_20pct": 2.6 }
     },
-    "insight": "SHOWROOM, INDICAÇÃO e OFERTA VENDEDOR convertem 10x mais que mídia paga"
+    "insight": "20% das vendas de Showroom, Indicação e Rede de Relacionamento são atribuídas ao tráfego pago (impacto de branding)"
   },
   "proposta": {
     "decisao": "Redistribuir budget: aumentar Google de 45% para 60%, reduzir Meta de 50% para 25%",

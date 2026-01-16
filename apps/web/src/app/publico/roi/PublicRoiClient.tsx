@@ -49,12 +49,33 @@ type PublicReport = {
       taxa_conversao: number;
     };
   };
+  atribuicao_indireta?: {
+    percentual: number;
+    fontes: string[];
+    detalhes: {
+      showroom: { vendas_total: number; atribuido: number; valor: number };
+      indicacao: { vendas_total: number; atribuido: number; valor: number };
+      rede_relacionamento: { vendas_total: number; atribuido: number; valor: number };
+    };
+    total_vendas_atribuidas: number;
+    total_valor_atribuido: number;
+  };
   roi: {
     investimento_lead: number;
-    vendas_midia: number;
-    valor_vendido: number;
-    cpv_total: number;
-    roi_percentual: number;
+    vendas_diretas?: number;
+    vendas_atribuidas?: number;
+    vendas_totais?: number;
+    vendas_midia?: number;
+    valor_direto?: number;
+    valor_atribuido?: number;
+    valor_total?: number;
+    valor_vendido?: number;
+    cpv_direto?: number;
+    cpv_com_atribuicao?: number;
+    cpv_total?: number;
+    roi_direto?: number;
+    roi_com_atribuicao?: number;
+    roi_percentual?: number;
     google: {
       investimento_lead: number;
       leads_crm: number;
@@ -76,9 +97,15 @@ type PublicReport = {
   };
   auditoria: {
     cpv_proposto: number;
-    cpv_real: number;
+    cpv_real?: number;
+    cpv_real_direto?: number;
+    cpv_real_com_atribuicao?: number;
     diferenca_cpv: string;
     validacao: string;
+    melhoria_com_atribuicao?: {
+      reducao_cpv: string;
+      aumento_roi: string;
+    };
     eficiencia_comparativa: {
       google_vs_meta_cpv: string;
       google_vs_meta_roi: string;
@@ -287,12 +314,52 @@ export default function PublicRoiClient() {
             </p>
           </div>
           <div className="rounded-xl border-2 border-blue-200 bg-blue-50 p-4">
-            <p className="text-xs font-medium text-blue-600 uppercase">Vendas de Mídia</p>
-            <p className="text-2xl font-bold text-blue-700">{formatNumber(report.roi.vendas_midia)}</p>
-            <p className="text-xs text-blue-600 mt-1">{formatCurrency(report.roi.valor_vendido)}</p>
+            <p className="text-xs font-medium text-blue-600 uppercase">Vendas Totais (Mídia)</p>
+            <p className="text-2xl font-bold text-blue-700">{formatNumber(report.roi.vendas_totais || report.roi.vendas_midia || 0)}</p>
+            <p className="text-xs text-blue-600 mt-1">{formatCurrency(report.roi.valor_total || report.roi.valor_vendido || 0)}</p>
           </div>
         </div>
       </div>
+
+      {/* Atribuição Indireta */}
+      {report.atribuicao_indireta && (
+        <div className="bg-gradient-to-r from-purple-900 to-indigo-900 rounded-xl p-6 text-white">
+          <div className="flex items-center gap-2 mb-4">
+            <TrendingUp className="w-5 h-5 text-purple-300" />
+            <h3 className="text-lg font-medium text-purple-200">📊 Atribuição Indireta ({report.atribuicao_indireta.percentual}%)</h3>
+          </div>
+          <p className="text-sm text-purple-300 mb-4">
+            {report.atribuicao_indireta.percentual}% das vendas de Showroom, Indicação e Rede de Relacionamento são atribuídas ao tráfego pago (impacto de branding).
+          </p>
+          <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
+            <div className="bg-white/10 rounded-lg p-4">
+              <p className="text-xs text-purple-300">Showroom</p>
+              <p className="text-xl font-bold">{report.atribuicao_indireta.detalhes.showroom.vendas_total} → {report.atribuicao_indireta.detalhes.showroom.atribuido}</p>
+              <p className="text-xs text-purple-400">{formatCurrency(report.atribuicao_indireta.detalhes.showroom.valor)}</p>
+            </div>
+            <div className="bg-white/10 rounded-lg p-4">
+              <p className="text-xs text-purple-300">Indicação</p>
+              <p className="text-xl font-bold">{report.atribuicao_indireta.detalhes.indicacao.vendas_total} → {report.atribuicao_indireta.detalhes.indicacao.atribuido}</p>
+              <p className="text-xs text-purple-400">{formatCurrency(report.atribuicao_indireta.detalhes.indicacao.valor)}</p>
+            </div>
+            <div className="bg-white/10 rounded-lg p-4">
+              <p className="text-xs text-purple-300">Rede Relacionamento</p>
+              <p className="text-xl font-bold">{report.atribuicao_indireta.detalhes.rede_relacionamento.vendas_total} → {report.atribuicao_indireta.detalhes.rede_relacionamento.atribuido}</p>
+              <p className="text-xs text-purple-400">{formatCurrency(report.atribuicao_indireta.detalhes.rede_relacionamento.valor)}</p>
+            </div>
+            <div className="bg-emerald-500/30 rounded-lg p-4 border border-emerald-400">
+              <p className="text-xs text-emerald-300">Total Atribuído</p>
+              <p className="text-xl font-bold text-emerald-400">+{report.atribuicao_indireta.total_vendas_atribuidas} vendas</p>
+              <p className="text-xs text-emerald-400">{formatCurrency(report.atribuicao_indireta.total_valor_atribuido)}</p>
+            </div>
+            <div className="bg-amber-500/30 rounded-lg p-4 border border-amber-400">
+              <p className="text-xs text-amber-300">Melhoria CPV</p>
+              <p className="text-xl font-bold text-amber-400">{report.auditoria.melhoria_com_atribuicao?.reducao_cpv || '-30%'}</p>
+              <p className="text-xs text-amber-400">ROI {report.auditoria.melhoria_com_atribuicao?.aumento_roi || '+2.233%'}</p>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* CPV Real */}
       <div className="bg-gradient-to-r from-gray-900 to-gray-800 rounded-xl p-6 text-white">
@@ -300,25 +367,30 @@ export default function PublicRoiClient() {
           <Scale className="w-5 h-5 text-gray-400" />
           <h3 className="text-lg font-medium text-gray-300">CPV Real (Só Campanhas de LEAD)</h3>
         </div>
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
           <div>
-            <p className="text-sm text-gray-400">CPV Total</p>
-            <p className="text-3xl font-semibold text-white">{formatCurrency(report.roi.cpv_total)}</p>
-            <p className="text-xs text-gray-500">por venda</p>
+            <p className="text-sm text-gray-400">CPV (só direto)</p>
+            <p className="text-2xl font-semibold text-gray-400">{formatCurrency(report.roi.cpv_direto || report.roi.cpv_total || 0)}</p>
+            <p className="text-xs text-gray-500">{report.roi.vendas_diretas || 26} vendas</p>
+          </div>
+          <div className="bg-emerald-500/20 rounded-lg p-4 border border-emerald-400/50">
+            <p className="text-sm text-emerald-300">CPV (com atribuição)</p>
+            <p className="text-2xl font-semibold text-emerald-400">{formatCurrency(report.roi.cpv_com_atribuicao || report.roi.cpv_total || 0)}</p>
+            <p className="text-xs text-emerald-500">{report.roi.vendas_totais || 37} vendas</p>
           </div>
           <div>
             <p className="text-sm text-gray-400">CPV Google</p>
-            <p className="text-3xl font-semibold text-emerald-400">{formatCurrency(report.roi.google.cpv)}</p>
+            <p className="text-2xl font-semibold text-emerald-400">{formatCurrency(report.roi.google.cpv)}</p>
             <p className="text-xs text-emerald-500">⭐ Mais eficiente</p>
           </div>
           <div>
             <p className="text-sm text-gray-400">CPV Meta</p>
-            <p className="text-3xl font-semibold text-red-400">{formatCurrency(report.roi.meta.cpv)}</p>
+            <p className="text-2xl font-semibold text-red-400">{formatCurrency(report.roi.meta.cpv)}</p>
             <p className="text-xs text-red-500">3x mais caro</p>
           </div>
           <div>
-            <p className="text-sm text-gray-400">ROI Total</p>
-            <p className="text-3xl font-semibold text-blue-400">{formatNumber(report.roi.roi_percentual)}%</p>
+            <p className="text-sm text-gray-400">ROI (com atribuição)</p>
+            <p className="text-2xl font-semibold text-blue-400">{formatNumber(report.roi.roi_com_atribuicao || report.roi.roi_percentual || 0)}%</p>
             <p className="text-xs text-gray-500">retorno/investimento</p>
           </div>
         </div>
@@ -408,18 +480,22 @@ export default function PublicRoiClient() {
           <h3 className="text-lg font-bold">🔍 Auditoria: CPV Proposto vs CPV Real</h3>
         </div>
 
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
           <div className="bg-white/10 rounded-lg p-4">
             <p className="text-sm text-red-200">CPV Proposto</p>
             <p className="text-2xl font-bold">{formatCurrency(report.auditoria.cpv_proposto)}</p>
           </div>
-          <div className="bg-red-500/30 rounded-lg p-4 border border-red-400">
-            <p className="text-sm text-red-200">CPV Real</p>
-            <p className="text-2xl font-bold text-red-300">{formatCurrency(report.auditoria.cpv_real)}</p>
+          <div className="bg-white/10 rounded-lg p-4">
+            <p className="text-sm text-red-200">CPV (só direto)</p>
+            <p className="text-2xl font-bold text-red-300">{formatCurrency(report.auditoria.cpv_real_direto || report.auditoria.cpv_real || 0)}</p>
+          </div>
+          <div className="bg-amber-500/30 rounded-lg p-4 border border-amber-400">
+            <p className="text-sm text-amber-200">CPV (com atribuição)</p>
+            <p className="text-2xl font-bold text-amber-300">{formatCurrency(report.auditoria.cpv_real_com_atribuicao || report.auditoria.cpv_real || 0)}</p>
           </div>
           <div className="bg-white/10 rounded-lg p-4 col-span-2">
-            <p className="text-sm text-red-200">Diferença</p>
-            <p className="text-xl font-bold text-amber-400">{report.auditoria.diferenca_cpv}</p>
+            <p className="text-sm text-red-200">Status</p>
+            <p className="text-lg font-bold text-amber-400">{report.auditoria.diferenca_cpv}</p>
           </div>
         </div>
 
