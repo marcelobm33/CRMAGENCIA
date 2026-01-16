@@ -55,29 +55,38 @@ function Tooltip({
   const [isVisible, setIsVisible] = useState(false);
 
   return (
-    <div className="relative inline-block">
-      <div
+    <div className="relative inline-flex items-center gap-1 group">
+      {children}
+      <button
+        type="button"
         onMouseEnter={() => setIsVisible(true)}
         onMouseLeave={() => setIsVisible(false)}
-        className="cursor-help"
+        onClick={() => setIsVisible(!isVisible)}
+        className="inline-flex items-center justify-center w-4 h-4 rounded-full bg-slate-200 hover:bg-slate-300 transition-colors cursor-help shrink-0"
+        aria-label="Ver detalhes do cálculo"
       >
-        {children}
-        <Info className="w-3 h-3 text-slate-400 inline-block ml-1 -mt-1" />
-      </div>
+        <Info className="w-2.5 h-2.5 text-slate-600" />
+      </button>
       {isVisible && (
-        <div className="absolute z-50 bottom-full left-1/2 -translate-x-1/2 mb-2 w-72 p-3 bg-slate-900 text-white text-xs rounded-lg shadow-xl">
-          <p className="font-medium mb-1">{content}</p>
+        <div className="absolute z-[100] bottom-full left-0 mb-2 w-80 p-4 bg-slate-900 text-white text-sm rounded-xl shadow-2xl border border-slate-700">
+          <p className="font-medium text-slate-100 leading-relaxed">{content}</p>
           {formula && (
-            <p className="text-slate-300 font-mono text-[10px] mt-2 p-2 bg-slate-800 rounded">
-              {formula}
-            </p>
+            <div className="mt-3 p-3 bg-slate-800 rounded-lg border border-slate-700">
+              <p className="text-[10px] uppercase text-slate-400 mb-1 font-semibold">Fórmula</p>
+              <p className="text-slate-200 font-mono text-xs break-all">
+                {formula}
+              </p>
+            </div>
           )}
           {source && (
-            <p className="text-slate-400 mt-2 pt-2 border-t border-slate-700">
-              📊 Fonte: {source}
-            </p>
+            <div className="mt-3 pt-3 border-t border-slate-700 flex items-center gap-2">
+              <span className="text-base">📊</span>
+              <p className="text-slate-400 text-xs">
+                <span className="font-medium text-slate-300">Fonte:</span> {source}
+              </p>
+            </div>
           )}
-          <div className="absolute top-full left-1/2 -translate-x-1/2 border-8 border-transparent border-t-slate-900"></div>
+          <div className="absolute top-full left-4 border-8 border-transparent border-t-slate-900"></div>
         </div>
       )}
     </div>
