@@ -40,6 +40,49 @@ function formatCurrency(value: number): string {
   }).format(value);
 }
 
+// Dicionário de siglas com explicações
+const SIGLAS: Record<string, string> = {
+  'CPV': 'Custo Por Venda — quanto se gasta em mídia para cada venda efetivada',
+  'CPL': 'Custo Por Lead — quanto se gasta para gerar cada lead (contato)',
+  'CTR': 'Click-Through Rate — percentual de pessoas que clicam no anúncio após vê-lo',
+  'ROI': 'Return On Investment — retorno sobre o investimento (quanto volta para cada real investido)',
+  'CRM': 'Customer Relationship Management — sistema de gestão de relacionamento com clientes',
+  'API': 'Application Programming Interface — integração técnica entre sistemas',
+  'SLA': 'Service Level Agreement — tempo máximo de resposta acordado',
+  'KPI': 'Key Performance Indicator — indicador-chave de performance',
+  'UTM': 'Urchin Tracking Module — parâmetros de rastreamento em links',
+  'PMax': 'Performance Max — tipo de campanha automatizada do Google',
+  'Lookalike': 'Público Semelhante — audiência criada com base em clientes existentes',
+};
+
+// Componente para exibir siglas com tooltip
+function Sigla({ termo }: { termo: keyof typeof SIGLAS }) {
+  const [isVisible, setIsVisible] = useState(false);
+  const definicao = SIGLAS[termo];
+  
+  if (!definicao) return <span className="font-semibold">{termo}</span>;
+  
+  return (
+    <span className="relative inline-block">
+      <span
+        onMouseEnter={() => setIsVisible(true)}
+        onMouseLeave={() => setIsVisible(false)}
+        onClick={() => setIsVisible(!isVisible)}
+        className="font-semibold text-indigo-700 border-b border-dotted border-indigo-400 cursor-help"
+      >
+        {termo}
+      </span>
+      {isVisible && (
+        <span className="absolute z-[100] bottom-full left-1/2 -translate-x-1/2 mb-2 w-64 p-3 bg-slate-900 text-white text-xs rounded-lg shadow-xl">
+          <span className="font-bold text-indigo-300">{termo}</span>
+          <span className="block mt-1 text-slate-300 leading-relaxed">{definicao}</span>
+          <span className="absolute top-full left-1/2 -translate-x-1/2 border-6 border-transparent border-t-slate-900"></span>
+        </span>
+      )}
+    </span>
+  );
+}
+
 // Componente de Tooltip
 function Tooltip({ 
   children, 
@@ -107,7 +150,7 @@ export default function ReuniaoAgenciaPage() {
             Relatório de Alinhamento
           </h1>
           <p className="text-slate-400 text-lg max-w-2xl">
-            Cruzamento de dados entre relatórios da agência e vendas reais do CRM. 
+            Cruzamento de dados entre relatórios da agência e vendas reais do <Sigla termo="CRM" />. 
             Base para tomada de decisão sobre estratégia de mídia paga.
           </p>
         </div>
@@ -213,7 +256,7 @@ export default function ReuniaoAgenciaPage() {
                       formula="(Faturamento / Investimento) × 100 = (R$ 1.970.100 / R$ 20.693) × 100"
                       source="CRM (vendas) + Relatório agência (investimento)"
                     >
-                      <p className="text-sm text-slate-500">ROI</p>
+                      <p className="text-sm text-slate-500"><Sigla termo="ROI" /></p>
                     </Tooltip>
                     <p className="text-3xl font-bold text-emerald-600">9.521%</p>
                   </div>
@@ -604,10 +647,10 @@ export default function ReuniaoAgenciaPage() {
                   4
                 </div>
                 <div className="flex-1">
-                  <h3 className="text-lg font-semibold text-slate-900 mb-2">Acompanhamento por CPV, não CPL</h3>
+                  <h3 className="text-lg font-semibold text-slate-900 mb-2">Acompanhamento por <Sigla termo="CPV" />, não <Sigla termo="CPL" /></h3>
                   <p className="text-slate-600 mb-4">
-                    O custo por lead (CPL) não reflete a realidade. Um lead de R$ 50 que não converte é mais caro que um de R$ 200 que vira venda. 
-                    O indicador que importa é o Custo por Venda (CPV).
+                    O custo por lead (<Sigla termo="CPL" />) não reflete a realidade. Um lead de R$ 50 que não converte é mais caro que um de R$ 200 que vira venda. 
+                    O indicador que importa é o Custo por Venda (<Sigla termo="CPV" />).
                   </p>
                   <div className="grid md:grid-cols-2 gap-4">
                     <div className="p-4 bg-slate-50 rounded-xl">
@@ -644,7 +687,7 @@ export default function ReuniaoAgenciaPage() {
               <h2 className="text-3xl font-bold mb-6">Conclusão</h2>
               
               <p className="text-lg text-slate-300 mb-8">
-                O investimento em mídia paga está gerando retorno positivo, com ROI de <strong className="text-white">8.518%</strong>. 
+                O investimento em mídia paga está gerando retorno positivo, com <Sigla termo="ROI" /> de <strong className="text-white">8.518%</strong>. 
                 No entanto, existe uma disparidade clara entre os canais: <strong className="text-emerald-400">Google funciona</strong>, 
                 <strong className="text-amber-400"> Meta precisa de ajustes</strong>.
               </p>
@@ -663,7 +706,7 @@ export default function ReuniaoAgenciaPage() {
                 <div className="bg-white/10 rounded-xl p-5">
                   <Target className="w-8 h-8 text-blue-400 mx-auto mb-3" />
                   <h4 className="font-semibold mb-2">Medir</h4>
-                  <p className="text-sm text-slate-400">CPV por canal, não apenas CPL</p>
+                  <p className="text-sm text-slate-400"><Sigla termo="CPV" /> por canal, não apenas <Sigla termo="CPL" /></p>
                 </div>
               </div>
 
@@ -858,7 +901,7 @@ export default function ReuniaoAgenciaPage() {
                     </div>
                     <div className="flex items-center gap-2">
                       <CheckCircle2 className="w-4 h-4 text-emerald-500" />
-                      <span className="text-slate-600">Melhora CPV real</span>
+                      <span className="text-slate-600">Melhora <Sigla termo="CPV" /> real</span>
                     </div>
                   </div>
                 </div>
@@ -977,7 +1020,7 @@ export default function ReuniaoAgenciaPage() {
                       formula="(Cliques / Impressões) × 100"
                       source="Meta Ads / Google Ads - relatório de campanha"
                     >
-                      <p className="font-medium text-purple-900 mb-1">CTR (Click-Through Rate)</p>
+                      <p className="font-medium text-purple-900 mb-1"><Sigla termo="CTR" /> (Click-Through Rate)</p>
                     </Tooltip>
                     <p className="text-sm text-purple-700">Criativo atrativo? Público certo?</p>
                   </div>
@@ -997,7 +1040,7 @@ export default function ReuniaoAgenciaPage() {
                       formula="Hora primeira mensagem - Hora entrada lead"
                       source="CRM - histórico de atividades"
                     >
-                      <p className="font-medium text-purple-900 mb-1">Tempo de Resposta (SLA)</p>
+                      <p className="font-medium text-purple-900 mb-1">Tempo de Resposta (<Sigla termo="SLA" />)</p>
                     </Tooltip>
                     <p className="text-sm text-purple-700">Responder em 5min aumenta conversão 9x</p>
                   </div>
@@ -1026,10 +1069,10 @@ export default function ReuniaoAgenciaPage() {
                       <RefreshCw className="w-5 h-5 text-blue-600" />
                     </div>
                     <div>
-                      <h4 className="font-semibold text-blue-900">API de Conversões Offline</h4>
+                      <h4 className="font-semibold text-blue-900"><Sigla termo="API" /> de Conversões Offline</h4>
                       <p className="text-sm text-blue-700 mt-1">
-                        Integrar vendas do CRM de volta para Meta e Google. O algoritmo passa a otimizar para quem <strong>compra</strong>, não só quem clica.
-                        Isso pode reduzir o CPV em até 30%.
+                        Integrar vendas do <Sigla termo="CRM" /> de volta para Meta e Google. O algoritmo passa a otimizar para quem <strong>compra</strong>, não só quem clica.
+                        Isso pode reduzir o <Sigla termo="CPV" /> em até 30%.
                       </p>
                     </div>
                   </div>
@@ -1038,7 +1081,7 @@ export default function ReuniaoAgenciaPage() {
                       <Users className="w-5 h-5 text-emerald-600" />
                     </div>
                     <div>
-                      <h4 className="font-semibold text-emerald-900">Lookalike de Compradores</h4>
+                      <h4 className="font-semibold text-emerald-900"><Sigla termo="Lookalike" /> de Compradores</h4>
                       <p className="text-sm text-emerald-700 mt-1">
                         Criar público similar baseado em quem <strong>já comprou</strong>, não em quem só clicou.
                         Meta e Google podem encontrar pessoas parecidas com seus melhores clientes.
@@ -1111,21 +1154,30 @@ export default function ReuniaoAgenciaPage() {
                   <h3 className="text-lg font-semibold text-slate-900">Perguntas para Fazer na Reunião</h3>
                 </div>
                 <div className="space-y-3">
-                  {[
-                    "Qual o CTR médio das campanhas? Está acima de 1%?",
-                    "Qual a frequência dos anúncios? Estão saturando o público?",
-                    "Vocês já usam API de Conversões Offline?",
-                    "Qual criativo específico gera mais VENDAS, não só cliques?",
-                    "O lookalike é baseado em compradores ou só em leads?",
-                    "Temos remarketing estruturado por etapa do funil?",
-                  ].map((pergunta, i) => (
-                    <div key={i} className="flex items-center gap-3 p-3 bg-rose-50 rounded-lg border border-rose-100">
-                      <span className="w-6 h-6 bg-rose-200 text-rose-700 rounded-full flex items-center justify-center text-xs font-bold shrink-0">
-                        {i + 1}
-                      </span>
-                      <p className="text-sm text-rose-800">{pergunta}</p>
-                    </div>
-                  ))}
+                  <div className="flex items-center gap-3 p-3 bg-rose-50 rounded-lg border border-rose-100">
+                    <span className="w-6 h-6 bg-rose-200 text-rose-700 rounded-full flex items-center justify-center text-xs font-bold shrink-0">1</span>
+                    <p className="text-sm text-rose-800">Qual o <Sigla termo="CTR" /> médio das campanhas? Está acima de 1%?</p>
+                  </div>
+                  <div className="flex items-center gap-3 p-3 bg-rose-50 rounded-lg border border-rose-100">
+                    <span className="w-6 h-6 bg-rose-200 text-rose-700 rounded-full flex items-center justify-center text-xs font-bold shrink-0">2</span>
+                    <p className="text-sm text-rose-800">Qual a frequência dos anúncios? Estão saturando o público?</p>
+                  </div>
+                  <div className="flex items-center gap-3 p-3 bg-rose-50 rounded-lg border border-rose-100">
+                    <span className="w-6 h-6 bg-rose-200 text-rose-700 rounded-full flex items-center justify-center text-xs font-bold shrink-0">3</span>
+                    <p className="text-sm text-rose-800">Vocês já usam <Sigla termo="API" /> de Conversões Offline?</p>
+                  </div>
+                  <div className="flex items-center gap-3 p-3 bg-rose-50 rounded-lg border border-rose-100">
+                    <span className="w-6 h-6 bg-rose-200 text-rose-700 rounded-full flex items-center justify-center text-xs font-bold shrink-0">4</span>
+                    <p className="text-sm text-rose-800">Qual criativo específico gera mais VENDAS, não só cliques?</p>
+                  </div>
+                  <div className="flex items-center gap-3 p-3 bg-rose-50 rounded-lg border border-rose-100">
+                    <span className="w-6 h-6 bg-rose-200 text-rose-700 rounded-full flex items-center justify-center text-xs font-bold shrink-0">5</span>
+                    <p className="text-sm text-rose-800">O <Sigla termo="Lookalike" /> é baseado em compradores ou só em leads?</p>
+                  </div>
+                  <div className="flex items-center gap-3 p-3 bg-rose-50 rounded-lg border border-rose-100">
+                    <span className="w-6 h-6 bg-rose-200 text-rose-700 rounded-full flex items-center justify-center text-xs font-bold shrink-0">6</span>
+                    <p className="text-sm text-rose-800">Temos remarketing estruturado por etapa do funil?</p>
+                  </div>
                 </div>
               </div>
             </div>
@@ -1138,7 +1190,7 @@ export default function ReuniaoAgenciaPage() {
               <div>
                 <h4 className="font-semibold text-indigo-900">Observação Final</h4>
                 <p className="text-indigo-800 mt-2">
-                  As otimizações técnicas acima podem representar uma <strong>redução de 20-40% no CPV</strong> quando bem implementadas.
+                  As otimizações técnicas acima podem representar uma <strong>redução de 20-40% no <Sigla termo="CPV" /></strong> quando bem implementadas.
                   A integração de conversões offline é especialmente crítica: sem ela, Meta e Google otimizam para cliques, não para vendas reais.
                 </p>
                 <p className="text-indigo-800 mt-3">
