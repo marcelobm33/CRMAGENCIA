@@ -1,132 +1,127 @@
 {
-  "generated_at": "2026-01-15T12:00:00.000000+00:00",
-  "periodo": "01/10/2025 a 14/01/2026",
-  "roi": {
-    "investimento_total": 53598.0,
-    "leads_agencia": 1131,
-    "leads_crm": 380,
-    "vendas_crm": 8,
-    "valor_vendido": 744200.0,
-    "custo_por_lead_real": 141.05,
-    "custo_por_venda": 6699.75,
-    "roi_percentual": 1388.48,
-    "roi_real_15pct": 208,
-    "roi_real_20pct": 278,
-    "roi_real_25pct": 347,
-    "meta": {
-      "investimento": 29743.71,
-      "leads_agencia": 788,
-      "leads_crm": 285,
-      "vendas": 6,
-      "valor_vendido": 602400.0,
-      "custo_por_lead": 104.36,
-      "custo_por_venda": 4957.28,
-      "roi": 2025.3
+  "generated_at": "2026-01-16T14:00:00.000000+00:00",
+  "periodo": "01/10/2025 a 31/12/2025",
+  "nota": "Análise Out-Nov-Dez 2025. SITE considerado como Google Ads. Separação LEAD vs BRANDING.",
+  "investimento": {
+    "total": 46598,
+    "lead": 40931,
+    "branding": 5667,
+    "meta_total": 25905,
+    "meta_lead": 20238,
+    "google_total": 20693,
+    "google_lead": 20693,
+    "distribuicao": {
+      "meta_whatsapp": 4500,
+      "meta_site": 14250,
+      "meta_alcance": 3000,
+      "meta_visitas_perfil": 2250,
+      "google_pesquisa": 7500,
+      "google_pmax": 13500,
+      "tiktok_branding": 1500
+    }
+  },
+  "crm": {
+    "total_leads": 942,
+    "total_vendas": 119,
+    "total_valor": 10235900,
+    "midia_paga": {
+      "leads": 502,
+      "vendas": 26,
+      "valor": 2572500,
+      "taxa_conversao": 5.2
     },
+    "outras_fontes": {
+      "leads": 440,
+      "vendas": 93,
+      "valor": 7663400,
+      "taxa_conversao": 21.1
+    }
+  },
+  "roi": {
+    "investimento_lead": 40931,
+    "vendas_midia": 26,
+    "valor_vendido": 2572500,
+    "cpv_total": 1574,
+    "roi_percentual": 6285,
     "google": {
-      "investimento": 23854.29,
-      "leads_agencia": 736,
-      "leads_crm": 95,
-      "vendas": 2,
-      "valor_vendido": 141800.0,
-      "custo_por_lead": 251.1,
-      "custo_por_venda": 11927.15,
-      "roi": 594.44
+      "investimento_lead": 20693,
+      "leads_crm": 273,
+      "vendas": 20,
+      "valor_vendido": 1970100,
+      "cpv": 1035,
+      "roi": 9521,
+      "taxa_conversao": 7.3
+    },
+    "meta": {
+      "investimento_lead": 20238,
+      "leads_crm": 238,
+      "vendas": 6,
+      "valor_vendido": 602400,
+      "cpv": 3373,
+      "roi": 2977,
+      "taxa_conversao": 2.5
     }
   },
   "auditoria": {
+    "cpv_proposto": 400,
+    "cpv_real": 1574,
+    "diferenca_cpv": "4x maior que o proposto",
+    "validacao": "CPV de R$ 400 só existe se atribuir TODAS as vendas do CRM à mídia paga (incorreto)",
     "gap_leads": {
-      "agencia_reporta": 1131,
-      "crm_real": 380,
-      "diferenca": 751,
-      "percentual_perdido": 66.4,
-      "taxa_aproveitamento": 33.6
+      "agencia_reporta_mes": 380,
+      "crm_recebe_mes": 167,
+      "diferenca_percentual": 56
     },
-    "roi_real_com_margem": {
-      "margem_15pct": {
-        "lucro_bruto": 111630,
-        "roi": 208
-      },
-      "margem_20pct": {
-        "lucro_bruto": 148840,
-        "roi": 278
-      },
-      "margem_25pct": {
-        "lucro_bruto": 186050,
-        "roi": 347
-      }
-    },
-    "problema_critico": "De cada 100 leads que a agência reporta, apenas 34 chegam ao CRM. Possíveis causas: (1) leads duplicados na agência, (2) formulários com erros, (3) leads não integrados, (4) definição diferente de 'lead'."
+    "eficiencia_comparativa": {
+      "google_vs_meta_cpv": "Google é 3.3x mais barato",
+      "google_vs_meta_roi": "Google ROI é 3.2x maior",
+      "google_vs_meta_conversao": "Google converte 2.9x mais"
+    }
   },
   "qualidade": {
-    "resumo_midia": {
-      "total_leads": 380,
-      "ganhos": 8,
-      "perdidos": 365,
-      "em_andamento": 7,
-      "taxa_conversao": 2.14,
-      "custo_por_venda": 6699.75
+    "midia_paga": {
+      "total_leads": 502,
+      "vendas": 26,
+      "perdidos": 450,
+      "taxa_conversao": 5.2
     },
-    "comparativo_indicacao": {
-      "total_leads": 59,
-      "ganhos": 30,
-      "perdidos": 24,
-      "taxa_conversao": 55.56,
-      "multiplicador": 26
+    "google_via_site": {
+      "leads": 207,
+      "vendas": 19,
+      "taxa_conversao": 9.2,
+      "melhor_fonte": true
     },
-    "leads_frios_percentual": 57.5,
-    "top_motivos_perda": [
-      { "motivo": "Sem Interesse", "quantidade": 105, "percentual": 29.7 },
-      { "motivo": "Cliente Não Responde", "quantidade": 98, "percentual": 27.8 },
-      { "motivo": "Vai esperar", "quantidade": 45, "percentual": 12.7 },
-      { "motivo": "Crédito Negado", "quantidade": 22, "percentual": 6.2 },
-      { "motivo": "Produto não disponível", "quantidade": 19, "percentual": 5.4 }
-    ]
+    "comparativo_outras_fontes": {
+      "showroom": { "leads": 77, "vendas": 33, "taxa": 42.9 },
+      "oferta_vendedor": { "leads": 55, "vendas": 31, "taxa": 56.4 },
+      "indicacao": { "leads": 32, "vendas": 17, "taxa": 53.1 }
+    },
+    "insight": "SHOWROOM, INDICAÇÃO e OFERTA VENDEDOR convertem 10x mais que mídia paga"
   },
   "proposta": {
-    "decisao": "Manter por 14–30 dias com condição: melhorar qualidade do lead ou realocar budget.",
-    "cobrancas_imediatas": [
-      {
-        "item": "Explicar o gap de 751 leads",
-        "detalhe": "Agência reporta 1.131, mas só 380 chegam ao CRM. Onde estão os outros 66%?"
-      },
-      {
-        "item": "Segmentação inadequada",
-        "detalhe": "57,5% dos leads são frios ('Sem Interesse' + 'Não Responde'). Estão atraindo curiosos."
-      },
-      {
-        "item": "UTMs e rastreamento",
-        "detalhe": "Google tem 95 leads no CRM mas agência reporta 736. Verificar integrações."
-      }
+    "decisao": "Redistribuir budget: aumentar Google de 45% para 60%, reduzir Meta de 50% para 25%",
+    "cobrancas_7_dias": [
+      "Explicar por que Meta e Google têm investimento similar (50/50) se Google converte 3x mais",
+      "Relatório de custo por conversa INICIADA vs conversa QUALIFICADA no WhatsApp",
+      "Quantas das 330 conversões Meta viraram leads reais no CRM? (temos só 238)",
+      "Proposta de aumento do Google Pesquisa para 60% do orçamento"
     ],
-    "exigir_no_relatorio_semanal": [
-      "% de leads qualificados (SDR) / total leads",
-      "% de agendamentos / qualificados",
-      "Custo por venda (CRM) por canal: META R$ 4.957 vs Google R$ 11.927",
-      "SLA de primeira resposta (98 leads perdidos por 'não responde')"
+    "realocacao": [
+      "GOOGLE (Pesquisa + PMax): aumentar para 60% = R$ 9.300/mês",
+      "META (WhatsApp + Site): reduzir para 25% = R$ 3.875/mês",
+      "BRANDING: manter 15% = R$ 2.325/mês"
     ],
-    "realocacao_budget": {
-      "manter_aumentar": [
-        "META (ROI 2.025%)",
-        "Remarketing (leads quentes)",
-        "Criativos com filtro de preço"
-      ],
-      "revisar_otimizar": [
-        "Google Search (ROI 594%)",
-        "Segmentação lookalike",
-        "Landing pages de captura"
-      ],
-      "reduzir_pausar": [
-        "Campanhas de alcance puro",
-        "Públicos frios sem filtro",
-        "Anúncios sem preço/qualificação"
-      ]
+    "vendas_esperadas_novo_mix": {
+      "google": 9,
+      "meta": 1,
+      "total_mes": 10,
+      "aumento_vs_atual": "15%"
     },
     "kpis_para_decidir": [
-      "% Qualificados (SDR) / total leads",
-      "% Agendamentos / qualificados",
-      "Custo por venda (CRM) por canal",
-      "'Não responde' + SLA de 1ª resposta"
+      "CPV por plataforma (Google R$ 1.035 vs Meta R$ 3.373)",
+      "Taxa de conversão por plataforma (Google 7.3% vs Meta 2.5%)",
+      "ROI por plataforma (Google 9.521% vs Meta 2.977%)",
+      "Custo por lead qualificado (não só clique)"
     ]
   }
 }
