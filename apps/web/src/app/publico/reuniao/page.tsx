@@ -73,10 +73,10 @@ function Sigla({ termo }: { termo: keyof typeof SIGLAS }) {
         {termo}
       </span>
       {isVisible && (
-        <span className="absolute z-[100] bottom-full left-1/2 -translate-x-1/2 mb-2 w-64 p-3 bg-slate-900 text-white text-xs rounded-lg shadow-xl">
+        <span className="absolute z-[100] top-full left-1/2 -translate-x-1/2 mt-2 w-64 p-3 bg-slate-900 text-white text-xs rounded-lg shadow-xl">
+          <span className="absolute bottom-full left-1/2 -translate-x-1/2 border-6 border-transparent border-b-slate-900"></span>
           <span className="font-bold text-indigo-300">{termo}</span>
           <span className="block mt-1 text-slate-300 leading-relaxed">{definicao}</span>
-          <span className="absolute top-full left-1/2 -translate-x-1/2 border-6 border-transparent border-t-slate-900"></span>
         </span>
       )}
     </span>
@@ -111,7 +111,8 @@ function Tooltip({
         <Info className="w-2.5 h-2.5 text-slate-600" />
       </button>
       {isVisible && (
-        <div className="absolute z-[100] bottom-full left-0 mb-2 w-80 p-4 bg-slate-900 text-white text-sm rounded-xl shadow-2xl border border-slate-700">
+        <div className="absolute z-[100] top-full left-0 mt-2 w-80 p-4 bg-slate-900 text-white text-sm rounded-xl shadow-2xl border border-slate-700">
+          <div className="absolute bottom-full left-4 border-8 border-transparent border-b-slate-900"></div>
           <p className="font-medium text-slate-100 leading-relaxed">{content}</p>
           {formula && (
             <div className="mt-3 p-3 bg-slate-800 rounded-lg border border-slate-700">
@@ -129,7 +130,6 @@ function Tooltip({
               </p>
             </div>
           )}
-          <div className="absolute top-full left-4 border-8 border-transparent border-t-slate-900"></div>
         </div>
       )}
     </div>
